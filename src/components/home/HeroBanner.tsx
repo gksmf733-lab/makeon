@@ -44,12 +44,10 @@ export default function HeroBanner() {
 
   return (
     <section className="relative overflow-hidden">
-      <div
-        className={`relative ${slide.image ? "" : `bg-gradient-to-br ${slide.bgColor}`} text-white transition-colors duration-700`}
-      >
-        {/* Background Image */}
-        {slide.image && (
-          <>
+      {slide.image ? (
+        /* 이미지가 있으면 이미지 자체가 배너 */
+        <Link href={slide.link} className="block">
+          <div className="relative w-full aspect-[21/9] md:aspect-[3/1]">
             <Image
               src={slide.image}
               alt={slide.title}
@@ -57,27 +55,31 @@ export default function HeroBanner() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-black/40" />
-          </>
-        )}
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">
-              {slide.title}
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 mb-6 drop-shadow">
-              {slide.subtitle}
-            </p>
-            <Link
-              href={slide.link}
-              className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors"
-            >
-              자세히 보기 →
-            </Link>
+          </div>
+        </Link>
+      ) : (
+        /* 이미지 없으면 기존 그라데이션 + 텍스트 */
+        <div
+          className={`bg-gradient-to-br ${slide.bgColor} text-white`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="max-w-2xl">
+              <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
+                {slide.title}
+              </h1>
+              <p className="text-lg md:text-xl text-white/80 mb-6">
+                {slide.subtitle}
+              </p>
+              <Link
+                href={slide.link}
+                className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors"
+              >
+                자세히 보기 →
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Navigation Arrows */}
       {activeBanners.length > 1 && (
