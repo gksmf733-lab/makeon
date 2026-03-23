@@ -33,10 +33,10 @@ export default function Header() {
             </Link>
             {admin && (
               <Link
-                href="/admin/products"
+                href="/admin"
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
               >
-                상품 관리
+                관리자
               </Link>
             )}
             <Link href="/cart" className="relative p-2">
@@ -110,13 +110,15 @@ export default function Header() {
             >
               마케팅 상품
             </Link>
-            <Link
-              href="/admin/products"
-              onClick={() => setMenuOpen(false)}
-              className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-            >
-              상품 관리
-            </Link>
+            {admin && (
+              <Link
+                href="/admin"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
+              >
+                관리자
+              </Link>
+            )}
             <div className="pt-2 border-t border-gray-100">
               {currentUser ? (
                 <>
