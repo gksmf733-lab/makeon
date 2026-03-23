@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Package, Layout, ImageIcon, FileText, Tag } from "lucide-react";
+import { Shield, Package, Layout, ImageIcon, FileText, Tag, ClipboardList } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useProductStore } from "@/store/product-store";
 import { useSiteStore } from "@/store/site-store";
+import { useOrderStore } from "@/store/order-store";
 
 export default function AdminDashboard() {
   const currentUser = useAuthStore((s) => s.currentUser);
   const isAdmin = useAuthStore((s) => s.isAdmin);
   const products = useProductStore((s) => s.products);
   const content = useSiteStore((s) => s.content);
+  const orders = useOrderStore((s) => s.orders);
 
   if (!currentUser) {
     return (
@@ -55,6 +57,13 @@ export default function AdminDashboard() {
       color: "blue",
     },
     {
+      title: "주문 관리",
+      description: `접수된 주문 ${orders.length}건`,
+      icon: ClipboardList,
+      href: "/admin/orders",
+      color: "red",
+    },
+    {
       title: "카테고리 관리",
       description: `카테고리 ${content.categories?.length ?? 0}개`,
       icon: Tag,
@@ -79,6 +88,7 @@ export default function AdminDashboard() {
 
   const colorMap: Record<string, string> = {
     blue: "bg-blue-50 text-blue-600",
+    red: "bg-red-50 text-red-600",
     orange: "bg-orange-50 text-orange-600",
     purple: "bg-purple-50 text-purple-600",
     green: "bg-green-50 text-green-600",

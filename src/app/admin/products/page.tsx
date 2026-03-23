@@ -17,6 +17,7 @@ import {
   GripVertical,
   ArrowUp,
   ArrowDown,
+  ClipboardList,
 } from "lucide-react";
 import { useProductStore } from "@/store/product-store";
 import { useAuthStore } from "@/store/auth-store";
@@ -27,6 +28,9 @@ import {
   ProductFAQ,
   ProductProcess,
   ContentBlock,
+  OrderFormField,
+  OrderFieldType,
+  ORDER_FIELD_TYPE_LABELS,
   CATEGORY_LABELS,
 } from "@/types/product";
 
@@ -40,6 +44,7 @@ type FormData = {
   processSteps: ProductProcess[];
   faqs: ProductFAQ[];
   contentBlocks: ContentBlock[];
+  orderFormFields: OrderFormField[];
   isActive: boolean;
 };
 
@@ -61,6 +66,7 @@ const emptyForm: FormData = {
     { question: "", answer: "" },
   ],
   contentBlocks: [],
+  orderFormFields: [],
   isActive: true,
 };
 
@@ -148,6 +154,7 @@ export default function AdminProductsPage() {
       faqs:
         product.faqs?.length > 0 ? product.faqs : emptyForm.faqs,
       contentBlocks: product.contentBlocks || [],
+      orderFormFields: product.orderFormFields || [],
       isActive: product.isActive,
     });
     setEditingId(product.id);
@@ -246,6 +253,46 @@ export default function AdminProductsPage() {
     setForm({ ...form, faqs: form.faqs.filter((_, i) => i !== index) });
   };
 
+  // Order form field helpers
+  const addOrderField = () => {
+    const newField: OrderFormField = {
+      id: `field_${Date.now()}`,
+      type: "text",
+      label: "",
+      placeholder: "",
+      required: false,
+      options: [],
+    };
+    setForm({
+      ...form,
+      orderFormFields: [...form.orderFormFields, newField],
+    });
+  };
+
+  const updateOrderField = (
+    index: number,
+    updates: Partial<OrderFormField>
+  ) => {
+    const updated = [...form.orderFormFields];
+    updated[index] = { ...updated[index], ...updates };
+    setForm({ ...form, orderFormFields: updated });
+  };
+
+  const removeOrderField = (index: number) => {
+    setForm({
+      ...form,
+      orderFormFields: form.orderFormFields.filter((_, i) => i !== index),
+    });
+  };
+
+  const moveOrderField = (index: number, direction: "up" | "down") => {
+    const fields = [...form.orderFormFields];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= fields.length) return;
+    [fields[index], fields[target]] = [fields[target], fields[index]];
+    setForm({ ...form, orderFormFields: fields });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const productData = {
@@ -265,6 +312,7 @@ export default function AdminProductsPage() {
       processSteps: form.processSteps.filter((s) => s.title.trim()),
       faqs: form.faqs.filter((f) => f.question.trim() && f.answer.trim()),
       contentBlocks: form.contentBlocks.filter((b) => b.content.trim()),
+      orderFormFields: form.orderFormFields.filter((f) => f.label.trim()),
       isActive: form.isActive,
     };
 
@@ -603,6 +651,202 @@ export default function AdminProductsPage() {
                     >
                       <Plus className="w-3.5 h-3.5" />
                       이미지 추가
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* 주문서 양식 빌더 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList className="w-4 h-4 text-gray-500" />
+                    <h3 className="text-sm font-bold text-gray-900">
+                      주문서 양식
+                    </h3>
+                    <span className="text-xs text-gray-400">
+                      ({form.orderFormFields.length}개 필드)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addOrderField}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    필드 추가
+                  </button>
+                </div>
+
+                {form.orderFormFields.length === 0 && (
+                  <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                    <ClipboardList className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm text-gray-500 mb-1">
+                      주문서 양식이 없습니다
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      고객이 주문 시 작성할 항목을 추가하세요
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {form.orderFormFields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 transition-colors"
+                    >
+                      <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs font-semibold text-gray-500">
+                            필드 {index + 1}
+                          </span>
+                          {field.required && (
+                            <span className="text-xs text-red-500 font-medium">
+                              필수
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveOrderField(index, "up")}
+                            disabled={index === 0}
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 rounded"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveOrderField(index, "down")}
+                            disabled={
+                              index === form.orderFormFields.length - 1
+                            }
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 rounded"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeOrderField(index)}
+                            className="p-1 text-gray-400 hover:text-red-500 rounded ml-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-3 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              필드명 *
+                            </label>
+                            <input
+                              type="text"
+                              value={field.label}
+                              onChange={(e) =>
+                                updateOrderField(index, {
+                                  label: e.target.value,
+                                })
+                              }
+                              className={inputClass}
+                              placeholder="예: 사업자명, 연락처"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              필드 유형
+                            </label>
+                            <select
+                              value={field.type}
+                              onChange={(e) =>
+                                updateOrderField(index, {
+                                  type: e.target.value as OrderFieldType,
+                                })
+                              }
+                              className={inputClass}
+                            >
+                              {Object.entries(ORDER_FIELD_TYPE_LABELS).map(
+                                ([key, label]) => (
+                                  <option key={key} value={key}>
+                                    {label}
+                                  </option>
+                                )
+                              )}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              플레이스홀더
+                            </label>
+                            <input
+                              type="text"
+                              value={field.placeholder || ""}
+                              onChange={(e) =>
+                                updateOrderField(index, {
+                                  placeholder: e.target.value,
+                                })
+                              }
+                              className={inputClass}
+                              placeholder="입력 안내 문구"
+                            />
+                          </div>
+                          <div className="flex items-end pb-1">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={field.required}
+                                onChange={(e) =>
+                                  updateOrderField(index, {
+                                    required: e.target.checked,
+                                  })
+                                }
+                                className="w-4 h-4 text-blue-600 rounded"
+                              />
+                              <span className="text-sm text-gray-700">
+                                필수 항목
+                              </span>
+                            </label>
+                          </div>
+                        </div>
+                        {field.type === "select" && (
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">
+                              선택 옵션 (쉼표로 구분)
+                            </label>
+                            <input
+                              type="text"
+                              value={(field.options || []).join(", ")}
+                              onChange={(e) =>
+                                updateOrderField(index, {
+                                  options: e.target.value
+                                    .split(",")
+                                    .map((s) => s.trim())
+                                    .filter(Boolean),
+                                })
+                              }
+                              className={inputClass}
+                              placeholder="옵션1, 옵션2, 옵션3"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {form.orderFormFields.length > 0 && (
+                  <div className="flex justify-center pt-1">
+                    <button
+                      type="button"
+                      onClick={addOrderField}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-600 border border-blue-200 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      필드 추가
                     </button>
                   </div>
                 )}

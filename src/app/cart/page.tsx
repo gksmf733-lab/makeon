@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2, ClipboardList } from "lucide-react";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartStore } from "@/store/cart-store";
 
@@ -43,7 +43,18 @@ export default function CartPage() {
       {/* Cart Items */}
       <div className="space-y-3 mb-8">
         {items.map((item) => (
-          <CartItemCard key={item.product.id} item={item} />
+          <div key={item.product.id} className="space-y-2">
+            <CartItemCard item={item} />
+            <div className="flex justify-end px-1">
+              <Link
+                href={`/order/${item.product.id}`}
+                className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <ClipboardList className="w-4 h-4" />
+                주문서 작성
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -59,9 +70,18 @@ export default function CartPage() {
             {totalPrice.toLocaleString()}원
           </span>
         </div>
-        <button className="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors">
-          구매하기
-        </button>
+        {items.length === 1 ? (
+          <Link
+            href={`/order/${items[0].product.id}`}
+            className="block w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors text-center"
+          >
+            주문서 작성하기
+          </Link>
+        ) : (
+          <p className="text-center text-sm text-gray-500 mt-6 bg-gray-50 py-3 rounded-xl">
+            각 상품별로 &quot;주문서 작성&quot; 버튼을 눌러 개별 주문해 주세요.
+          </p>
+        )}
       </div>
     </div>
   );

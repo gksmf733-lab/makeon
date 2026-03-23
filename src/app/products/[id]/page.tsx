@@ -355,6 +355,13 @@ export default function ProductDetailPage() {
                   </button>
 
                   <Link
+                    href={`/order/${product.id}`}
+                    className="block w-full text-center bg-gray-900 text-white py-3.5 rounded-xl font-bold text-lg hover:bg-gray-800 transition-colors mt-3"
+                  >
+                    바로 주문하기
+                  </Link>
+
+                  <Link
                     href="/cart"
                     className="block text-center text-sm text-gray-500 hover:text-blue-600 mt-3 font-medium"
                   >
