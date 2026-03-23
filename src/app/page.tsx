@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Zap, Target, TrendingUp } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
 import { useProductStore } from "@/store/product-store";
+import HeroBanner from "@/components/home/HeroBanner";
 
 export default function HomePage() {
   const getActiveProducts = useProductStore((s) => s.getActiveProducts);
@@ -11,32 +12,8 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-              자영업자를 위한
-              <br />
-              <span className="text-yellow-300">셀프 마케팅</span> 플랫폼
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8 leading-relaxed">
-              복잡한 마케팅, 이제 MakeOn에서 원하는 상품을 골라
-              <br className="hidden md:block" />
-              간편하게 구매하고 바로 시작하세요.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-2 bg-white text-blue-700 px-8 py-3.5 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors"
-              >
-                상품 둘러보기
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Banner Carousel */}
+      <HeroBanner />
 
       {/* Value Props */}
       <section className="py-16 md:py-24 bg-white">
