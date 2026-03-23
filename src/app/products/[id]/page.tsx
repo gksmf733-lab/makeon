@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft,
   ShoppingCart,
   Check,
   Clock,
@@ -27,6 +26,26 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 type Tab = "description" | "process" | "faq";
+
+const defaultProcess = [
+  { step: 1, title: "상담 및 분석", description: "비즈니스 현황을 파악하고 최적의 마케팅 전략을 수립합니다." },
+  { step: 2, title: "기획 및 제작", description: "분석 결과를 바탕으로 맞춤형 콘텐츠를 기획하고 제작합니다." },
+  { step: 3, title: "실행 및 운영", description: "제작된 콘텐츠를 최적의 타이밍에 배포하고 운영합니다." },
+  { step: 4, title: "리포트 제공", description: "마케팅 성과를 분석하여 상세한 리포트를 제공합니다." },
+];
+
+const defaultFAQs = [
+  { question: "작업 기간은 얼마나 걸리나요?", answer: "상품에 따라 다르지만, 보통 결제 후 3~7영업일 내에 첫 결과물이 전달됩니다." },
+  { question: "수정은 가능한가요?", answer: "네, 기본 수정 횟수가 포함되어 있으며 추가 수정도 협의 가능합니다." },
+  { question: "환불 규정은 어떻게 되나요?", answer: "작업 시작 전까지 전액 환불이 가능하며, 작업 시작 후에는 진행률에 따라 부분 환불됩니다." },
+  { question: "결과물의 저작권은 누구에게 있나요?", answer: "납품 완료된 결과물의 저작권은 고객에게 귀속됩니다." },
+];
+
+const defaultRecommendations = [
+  "마케팅을 처음 시작하는 자영업자",
+  "비용 대비 효과적인 마케팅을 원하시는 분",
+  "전문적인 마케팅 대행을 찾고 계신 분",
+];
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -65,6 +84,14 @@ export default function ProductDetailPage() {
   const relatedProducts = getProductsByCategory(product.category)
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
+
+  const processSteps =
+    product.processSteps?.length > 0 ? product.processSteps : defaultProcess;
+  const faqs = product.faqs?.length > 0 ? product.faqs : defaultFAQs;
+  const recommendations =
+    product.recommendations?.length > 0
+      ? product.recommendations
+      : defaultRecommendations;
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     {
@@ -172,18 +199,12 @@ export default function ProductDetailPage() {
                         이런 분께 추천합니다
                       </h3>
                       <ul className="space-y-2 text-gray-600">
-                        <li className="flex items-center gap-2">
-                          <Star className="w-4 h-4 text-yellow-500" />
-                          마케팅을 처음 시작하는 자영업자
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Star className="w-4 h-4 text-yellow-500" />
-                          비용 대비 효과적인 마케팅을 원하시는 분
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Star className="w-4 h-4 text-yellow-500" />
-                          전문적인 마케팅 대행을 찾고 계신 분
-                        </li>
+                        {recommendations.map((rec, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <Star className="w-4 h-4 text-yellow-500" />
+                            {rec}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
@@ -191,28 +212,7 @@ export default function ProductDetailPage() {
 
                 {activeTab === "process" && (
                   <div className="space-y-1">
-                    {[
-                      {
-                        step: 1,
-                        title: "상담 및 분석",
-                        desc: "비즈니스 현황을 파악하고 최적의 마케팅 전략을 수립합니다.",
-                      },
-                      {
-                        step: 2,
-                        title: "기획 및 제작",
-                        desc: "분석 결과를 바탕으로 맞춤형 콘텐츠를 기획하고 제작합니다.",
-                      },
-                      {
-                        step: 3,
-                        title: "실행 및 운영",
-                        desc: "제작된 콘텐츠를 최적의 타이밍에 배포하고 운영합니다.",
-                      },
-                      {
-                        step: 4,
-                        title: "리포트 제공",
-                        desc: "마케팅 성과를 분석하여 상세한 리포트를 제공합니다.",
-                      },
-                    ].map((item) => (
+                    {processSteps.map((item) => (
                       <div
                         key={item.step}
                         className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition"
@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
                             {item.title}
                           </h4>
                           <p className="text-gray-500 text-sm mt-1">
-                            {item.desc}
+                            {item.description}
                           </p>
                         </div>
                       </div>
@@ -235,32 +235,17 @@ export default function ProductDetailPage() {
 
                 {activeTab === "faq" && (
                   <div className="space-y-4">
-                    {[
-                      {
-                        q: "작업 기간은 얼마나 걸리나요?",
-                        a: "상품에 따라 다르지만, 보통 결제 후 3~7영업일 내에 첫 결과물이 전달됩니다.",
-                      },
-                      {
-                        q: "수정은 가능한가요?",
-                        a: "네, 기본 수정 횟수가 포함되어 있으며 추가 수정도 협의 가능합니다.",
-                      },
-                      {
-                        q: "환불 규정은 어떻게 되나요?",
-                        a: "작업 시작 전까지 전액 환불이 가능하며, 작업 시작 후에는 진행률에 따라 부분 환불됩니다.",
-                      },
-                      {
-                        q: "결과물의 저작권은 누구에게 있나요?",
-                        a: "납품 완료된 결과물의 저작권은 고객에게 귀속됩니다.",
-                      },
-                    ].map((item, i) => (
+                    {faqs.map((item, i) => (
                       <div
                         key={i}
                         className="border border-gray-100 rounded-xl p-5"
                       >
                         <h4 className="font-bold text-gray-900 mb-2">
-                          Q. {item.q}
+                          Q. {item.question}
                         </h4>
-                        <p className="text-gray-600 text-sm">A. {item.a}</p>
+                        <p className="text-gray-600 text-sm">
+                          A. {item.answer}
+                        </p>
                       </div>
                     ))}
                   </div>

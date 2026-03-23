@@ -1,3 +1,14 @@
+export interface ProductFAQ {
+  question: string;
+  answer: string;
+}
+
+export interface ProductProcess {
+  step: number;
+  title: string;
+  description: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -6,6 +17,9 @@ export interface Product {
   category: ProductCategory;
   image: string;
   features: string[];
+  recommendations: string[];
+  processSteps: ProductProcess[];
+  faqs: ProductFAQ[];
   isActive: boolean;
   createdAt: string;
 }

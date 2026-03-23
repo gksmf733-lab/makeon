@@ -1,5 +1,25 @@
 import { Product } from "@/types/product";
 
+const defaultRecommendations = [
+  "마케팅을 처음 시작하는 자영업자",
+  "비용 대비 효과적인 마케팅을 원하시는 분",
+  "전문적인 마케팅 대행을 찾고 계신 분",
+];
+
+const defaultProcess = [
+  { step: 1, title: "상담 및 분석", description: "비즈니스 현황을 파악하고 최적의 마케팅 전략을 수립합니다." },
+  { step: 2, title: "기획 및 제작", description: "분석 결과를 바탕으로 맞춤형 콘텐츠를 기획하고 제작합니다." },
+  { step: 3, title: "실행 및 운영", description: "제작된 콘텐츠를 최적의 타이밍에 배포하고 운영합니다." },
+  { step: 4, title: "리포트 제공", description: "마케팅 성과를 분석하여 상세한 리포트를 제공합니다." },
+];
+
+const defaultFAQs = [
+  { question: "작업 기간은 얼마나 걸리나요?", answer: "상품에 따라 다르지만, 보통 결제 후 3~7영업일 내에 첫 결과물이 전달됩니다." },
+  { question: "수정은 가능한가요?", answer: "네, 기본 수정 횟수가 포함되어 있으며 추가 수정도 협의 가능합니다." },
+  { question: "환불 규정은 어떻게 되나요?", answer: "작업 시작 전까지 전액 환불이 가능하며, 작업 시작 후에는 진행률에 따라 부분 환불됩니다." },
+  { question: "결과물의 저작권은 누구에게 있나요?", answer: "납품 완료된 결과물의 저작권은 고객에게 귀속됩니다." },
+];
+
 export const initialProducts: Product[] = [
   {
     id: "1",
@@ -15,6 +35,9 @@ export const initialProducts: Product[] = [
       "최적 시간대 업로드",
       "성과 리포트 제공",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-01-15",
   },
@@ -32,6 +55,9 @@ export const initialProducts: Product[] = [
       "이미지 제작 포함",
       "월간 순위 리포트",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-01-20",
   },
@@ -49,6 +75,9 @@ export const initialProducts: Product[] = [
       "부정 리뷰 대응 전략",
       "월간 리뷰 분석 리포트",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-02-01",
   },
@@ -66,6 +95,9 @@ export const initialProducts: Product[] = [
       "A/B 테스트",
       "주간 성과 리포트",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-02-10",
   },
@@ -83,6 +115,9 @@ export const initialProducts: Product[] = [
       "콘텐츠 SEO 전략",
       "백링크 구축",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-02-15",
   },
@@ -100,6 +135,9 @@ export const initialProducts: Product[] = [
       "명함 디자인",
       "원본 파일 제공",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-03-01",
   },
@@ -117,6 +155,9 @@ export const initialProducts: Product[] = [
       "자동응답 설정",
       "친구 유입 전략",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-03-05",
   },
@@ -134,6 +175,9 @@ export const initialProducts: Product[] = [
       "수정 2회 포함",
       "SNS 최적 사이즈",
     ],
+    recommendations: defaultRecommendations,
+    processSteps: defaultProcess,
+    faqs: defaultFAQs,
     isActive: true,
     createdAt: "2024-03-10",
   },

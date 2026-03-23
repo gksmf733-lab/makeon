@@ -4,18 +4,34 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { User, UserRegisterInput } from "@/types/user";
 
+const DEFAULT_ADMIN: User = {
+  id: "admin-001",
+  username: "admin",
+  password: "admin123",
+  name: "관리자",
+  phone: "010-0000-0000",
+  businessName: "MakeOn",
+  industry: "기타",
+  url: "",
+  businessNumber: "000-00-00000",
+  address: "서울특별시",
+  role: "admin",
+  createdAt: "2024-01-01T00:00:00.000Z",
+};
+
 interface AuthState {
   users: User[];
   currentUser: User | null;
   register: (input: UserRegisterInput) => { success: boolean; message: string };
   login: (username: string, password: string) => { success: boolean; message: string };
   logout: () => void;
+  isAdmin: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      users: [],
+      users: [DEFAULT_ADMIN],
       currentUser: null,
 
       register: (input) => {
@@ -28,6 +44,7 @@ export const useAuthStore = create<AuthState>()(
         const newUser: User = {
           ...input,
           id: Date.now().toString(),
+          role: "user",
           createdAt: new Date().toISOString(),
         };
 
@@ -51,6 +68,10 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ currentUser: null });
+      },
+
+      isAdmin: () => {
+        return get().currentUser?.role === "admin";
       },
     }),
     {
