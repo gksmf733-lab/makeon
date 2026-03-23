@@ -17,7 +17,8 @@ export interface BannerSlide {
   link: string;
   bgColor: string;
   isActive: boolean;
-  image?: string; // base64 data URL
+  image?: string; // deprecated: 기존 base64 호환용
+  imageKey?: string; // IndexedDB 참조 키
 }
 
 export interface ValueProp {

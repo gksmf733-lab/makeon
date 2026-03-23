@@ -5,12 +5,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSiteStore } from "@/store/site-store";
+import { getImage } from "@/lib/image-db";
 
 export default function HeroBanner() {
   const banners = useSiteStore((s) => s.content.banners);
   const activeBanners = banners.filter((b) => b.isActive);
 
   const [current, setCurrent] = useState(0);
+  const [bannerImages, setBannerImages] = useState<Record<string, string>>({});
+
+  // IndexedDB에서 배너 이미지 로드
+  useEffect(() => {
+    const loadImages = async () => {
+      const images: Record<string, string> = {};
+      for (const banner of activeBanners) {
+        if (banner.imageKey) {
+          const dataUrl = await getImage(banner.imageKey);
+          if (dataUrl) images[banner.id] = dataUrl;
+        }
+      }
+      setBannerImages(images);
+    };
+    loadImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [banners]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -41,15 +59,16 @@ export default function HeroBanner() {
   }
 
   const slide = activeBanners[current];
+  const slideImage = bannerImages[slide.id];
 
   return (
     <section className="relative overflow-hidden">
-      {slide.image ? (
+      {slideImage ? (
         /* 이미지가 있으면 이미지 자체가 배너 */
         <Link href={slide.link} className="block">
           <div className="relative w-full h-[300px] md:h-[400px] bg-gray-100 border-b border-gray-200">
             <Image
-              src={slide.image}
+              src={slideImage}
               alt={slide.title}
               fill
               className="object-cover"
