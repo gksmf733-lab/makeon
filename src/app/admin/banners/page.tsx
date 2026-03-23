@@ -131,8 +131,15 @@ export default function AdminBannersPage() {
       return;
     }
     try {
-      const dataUrl = await resizeImage(file, 1920);
-      setForm({ ...form, image: dataUrl });
+      const dataUrl = await resizeImage(file, 1200);
+      // localStorage 용량 초과 방지: base64 크기 체크
+      if (dataUrl.length > 1.5 * 1024 * 1024) {
+        // 너무 크면 더 작게 리사이즈
+        const smallerDataUrl = await resizeImage(file, 800);
+        setForm({ ...form, image: smallerDataUrl });
+      } else {
+        setForm({ ...form, image: dataUrl });
+      }
     } catch {
       alert("이미지 처리 중 오류가 발생했습니다.");
     }
@@ -141,13 +148,17 @@ export default function AdminBannersPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingId) {
-      updateBanner(editingId, form);
-    } else {
-      addBanner(form);
+    try {
+      if (editingId) {
+        updateBanner(editingId, form);
+      } else {
+        addBanner(form);
+      }
+      setShowForm(false);
+      setEditingId(null);
+    } catch {
+      alert("저장에 실패했습니다. 이미지 용량이 너무 클 수 있습니다. 더 작은 이미지를 사용해 주세요.");
     }
-    setShowForm(false);
-    setEditingId(null);
   };
 
   const handleDelete = (id: string) => {
