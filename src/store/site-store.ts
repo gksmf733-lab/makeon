@@ -184,6 +184,21 @@ export const useSiteStore = create<SiteState>()(
     }),
     {
       name: "makeon-site",
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          try {
+            localStorage.setItem(name, JSON.stringify(value));
+          } catch (e) {
+            console.error("localStorage 저장 실패 (용량 초과 가능):", e);
+            alert("저장 공간이 부족합니다. 이미지 용량을 줄이거나 기존 배너를 삭제해 주세요.");
+          }
+        },
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     }
   )
 );
