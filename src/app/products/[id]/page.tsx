@@ -175,6 +175,29 @@ export default function ProductDetailPage() {
                       </p>
                     </div>
 
+                    {/* 블로그형 콘텐츠 블록 */}
+                    {product.contentBlocks && product.contentBlocks.length > 0 && (
+                      <div className="space-y-5">
+                        {product.contentBlocks.map((block) => (
+                          <div key={block.id}>
+                            {block.type === "text" ? (
+                              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                                {block.content}
+                              </p>
+                            ) : (
+                              <div className="rounded-xl overflow-hidden">
+                                <img
+                                  src={block.content}
+                                  alt=""
+                                  className="w-full object-contain"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3">
                         포함 사항

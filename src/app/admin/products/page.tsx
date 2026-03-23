@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, X, Shield, ChevronDown, ChevronUp } from "lucide-react";
+import Image from "next/image";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Shield,
+  ChevronDown,
+  ChevronUp,
+  Type,
+  ImageIcon,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { useProductStore } from "@/store/product-store";
 import { useAuthStore } from "@/store/auth-store";
 import {
@@ -11,6 +25,7 @@ import {
   ProductCategory,
   ProductFAQ,
   ProductProcess,
+  ContentBlock,
   CATEGORY_LABELS,
 } from "@/types/product";
 
@@ -23,6 +38,7 @@ type FormData = {
   recommendations: string;
   processSteps: ProductProcess[];
   faqs: ProductFAQ[];
+  contentBlocks: ContentBlock[];
   isActive: boolean;
 };
 
@@ -43,11 +59,16 @@ const emptyForm: FormData = {
     { question: "", answer: "" },
     { question: "", answer: "" },
   ],
+  contentBlocks: [],
   isActive: true,
 };
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+
+function generateBlockId() {
+  return `block_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -60,6 +81,7 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [showDetail, setShowDetail] = useState(false);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // Auth guard
   if (!currentUser) {
@@ -122,14 +144,56 @@ export default function AdminProductsPage() {
           ? product.processSteps
           : emptyForm.processSteps,
       faqs:
-        product.faqs?.length > 0
-          ? product.faqs
-          : emptyForm.faqs,
+        product.faqs?.length > 0 ? product.faqs : emptyForm.faqs,
+      contentBlocks: product.contentBlocks || [],
       isActive: product.isActive,
     });
     setEditingId(product.id);
     setShowDetail(false);
     setShowForm(true);
+  };
+
+  // Content block helpers
+  const addContentBlock = (type: "text" | "image") => {
+    const newBlock: ContentBlock = {
+      id: generateBlockId(),
+      type,
+      content: "",
+    };
+    setForm({ ...form, contentBlocks: [...form.contentBlocks, newBlock] });
+  };
+
+  const updateContentBlock = (id: string, content: string) => {
+    setForm({
+      ...form,
+      contentBlocks: form.contentBlocks.map((b) =>
+        b.id === id ? { ...b, content } : b
+      ),
+    });
+  };
+
+  const removeContentBlock = (id: string) => {
+    setForm({
+      ...form,
+      contentBlocks: form.contentBlocks.filter((b) => b.id !== id),
+    });
+  };
+
+  const moveContentBlock = (index: number, direction: "up" | "down") => {
+    const blocks = [...form.contentBlocks];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= blocks.length) return;
+    [blocks[index], blocks[target]] = [blocks[target], blocks[index]];
+    setForm({ ...form, contentBlocks: blocks });
+  };
+
+  const handleImageUpload = (blockId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      updateContentBlock(blockId, dataUrl);
+    };
+    reader.readAsDataURL(file);
   };
 
   const updateProcessStep = (
@@ -198,6 +262,7 @@ export default function AdminProductsPage() {
         .filter(Boolean),
       processSteps: form.processSteps.filter((s) => s.title.trim()),
       faqs: form.faqs.filter((f) => f.question.trim() && f.answer.trim()),
+      contentBlocks: form.contentBlocks.filter((b) => b.content.trim()),
       isActive: form.isActive,
     };
 
@@ -237,7 +302,7 @@ export default function AdminProductsPage() {
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">
                 {editingId ? "상품 수정" : "새 상품 추가"}
@@ -354,6 +419,190 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
+              {/* 블로그형 콘텐츠 에디터 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                  <h3 className="text-sm font-bold text-gray-900">
+                    상품 상세 콘텐츠
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("text")}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      <Type className="w-3.5 h-3.5" />
+                      글 추가
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("image")}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      이미지 추가
+                    </button>
+                  </div>
+                </div>
+
+                {form.contentBlocks.length === 0 && (
+                  <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
+                    <div className="text-gray-400 mb-3">
+                      <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                    </div>
+                    <p className="text-sm text-gray-500 mb-1">
+                      블로그처럼 이미지와 글을 자유롭게 구성하세요
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      위의 &quot;글 추가&quot; 또는 &quot;이미지 추가&quot; 버튼을 클릭하여 시작하세요
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {form.contentBlocks.map((block, index) => (
+                    <div
+                      key={block.id}
+                      className="group relative border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 transition-colors"
+                    >
+                      {/* Block toolbar */}
+                      <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase">
+                            {block.type === "text" ? "텍스트" : "이미지"}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {index + 1} / {form.contentBlocks.length}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveContentBlock(index, "up")}
+                            disabled={index === 0}
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveContentBlock(index, "down")}
+                            disabled={index === form.contentBlocks.length - 1}
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeContentBlock(block.id)}
+                            className="p-1 text-gray-400 hover:text-red-500 rounded ml-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Block content */}
+                      <div className="p-3">
+                        {block.type === "text" ? (
+                          <textarea
+                            value={block.content}
+                            onChange={(e) =>
+                              updateContentBlock(block.id, e.target.value)
+                            }
+                            rows={4}
+                            className="w-full border-0 outline-none resize-none text-sm text-gray-700 placeholder-gray-400 leading-relaxed"
+                            placeholder="텍스트 내용을 입력하세요..."
+                          />
+                        ) : (
+                          <div>
+                            {block.content ? (
+                              <div className="relative">
+                                <img
+                                  src={block.content}
+                                  alt="업로드된 이미지"
+                                  className="w-full max-h-80 object-contain rounded-lg bg-gray-100"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const input = fileInputRefs.current[block.id];
+                                    if (input) input.click();
+                                  }}
+                                  className="absolute bottom-2 right-2 px-3 py-1.5 text-xs font-medium bg-white/90 text-gray-700 rounded-lg shadow hover:bg-white transition-colors"
+                                >
+                                  이미지 변경
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const input = fileInputRefs.current[block.id];
+                                  if (input) input.click();
+                                }}
+                                className="w-full py-10 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center gap-2"
+                              >
+                                <ImageIcon className="w-8 h-8 text-gray-300" />
+                                <span className="text-sm text-gray-500">
+                                  클릭하여 이미지를 업로드하세요
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  JPG, PNG, GIF, WebP
+                                </span>
+                              </button>
+                            )}
+                            <input
+                              ref={(el) => {
+                                fileInputRefs.current[block.id] = el;
+                              }}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleImageUpload(block.id, file);
+                              }}
+                            />
+                            <input
+                              type="text"
+                              value={block.content.startsWith("data:") ? "" : block.content}
+                              onChange={(e) =>
+                                updateContentBlock(block.id, e.target.value)
+                              }
+                              className={`${inputClass} mt-2`}
+                              placeholder="또는 이미지 URL을 직접 입력하세요"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {form.contentBlocks.length > 0 && (
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("text")}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      글 추가
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("image")}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-600 border border-blue-200 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      이미지 추가
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* 상세 정보 토글 */}
               <button
                 type="button"
@@ -365,7 +614,7 @@ export default function AdminProductsPage() {
                 ) : (
                   <ChevronDown className="w-4 h-4" />
                 )}
-                상세페이지 내용 편집 (추천 대상, 진행 과정, FAQ)
+                추가 정보 편집 (추천 대상, 진행 과정, FAQ)
               </button>
 
               {showDetail && (

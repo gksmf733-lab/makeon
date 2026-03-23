@@ -1,3 +1,9 @@
+export interface ContentBlock {
+  id: string;
+  type: "text" | "image";
+  content: string; // text content or image URL
+}
+
 export interface ProductFAQ {
   question: string;
   answer: string;
@@ -20,6 +26,7 @@ export interface Product {
   recommendations: string[];
   processSteps: ProductProcess[];
   faqs: ProductFAQ[];
+  contentBlocks: ContentBlock[];
   isActive: boolean;
   createdAt: string;
 }
