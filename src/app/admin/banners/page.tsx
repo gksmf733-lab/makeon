@@ -131,7 +131,7 @@ export default function AdminBannersPage() {
       return;
     }
     try {
-      const dataUrl = await resizeImage(file, 800);
+      const dataUrl = await resizeImage(file, 1920);
       setForm({ ...form, image: dataUrl });
     } catch {
       alert("이미지 처리 중 오류가 발생했습니다.");
