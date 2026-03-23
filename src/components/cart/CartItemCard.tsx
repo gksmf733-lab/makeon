@@ -3,6 +3,7 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { CartItem, CATEGORY_LABELS } from "@/types/product";
 import { useCartStore } from "@/store/cart-store";
+import { useSiteStore } from "@/store/site-store";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -10,6 +11,8 @@ interface CartItemCardProps {
 
 export default function CartItemCard({ item }: CartItemCardProps) {
   const { updateQuantity, removeItem } = useCartStore();
+  const categories = useSiteStore((s) => s.content.categories);
+  const categoryLabel = categories?.find((c) => c.key === item.product.category)?.label ?? CATEGORY_LABELS[item.product.category];
 
   return (
     <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
@@ -28,7 +31,7 @@ export default function CartItemCard({ item }: CartItemCardProps) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <span className="text-xs font-semibold text-blue-600">
-          {CATEGORY_LABELS[item.product.category]}
+          {categoryLabel}
         </span>
         <h3 className="font-bold text-gray-900 truncate">
           {item.product.name}

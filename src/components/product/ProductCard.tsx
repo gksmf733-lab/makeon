@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { Product, CATEGORY_LABELS } from "@/types/product";
 import { useCartStore } from "@/store/cart-store";
+import { useSiteStore } from "@/store/site-store";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +12,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
+  const categories = useSiteStore((s) => s.content.categories);
+  const categoryLabel = categories?.find((c) => c.key === product.category)?.label ?? CATEGORY_LABELS[product.category];
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="p-5">
           <span className="inline-block text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
-            {CATEGORY_LABELS[product.category]}
+            {categoryLabel}
           </span>
           <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
             {product.name}

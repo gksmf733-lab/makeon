@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useProductStore } from "@/store/product-store";
 import { useAuthStore } from "@/store/auth-store";
+import { useSiteStore } from "@/store/site-store";
 import {
   Product,
   ProductCategory,
@@ -76,6 +77,7 @@ export default function AdminProductsPage() {
     useProductStore();
   const currentUser = useAuthStore((s) => s.currentUser);
   const isAdmin = useAuthStore((s) => s.isAdmin);
+  const siteCategories = useSiteStore((s) => s.content.categories);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -381,7 +383,10 @@ export default function AdminProductsPage() {
                       }
                       className={inputClass}
                     >
-                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                      {(siteCategories && siteCategories.length > 0
+                        ? siteCategories.map((c) => [c.key, c.label] as const)
+                        : Object.entries(CATEGORY_LABELS)
+                      ).map(([key, label]) => (
                         <option key={key} value={key}>
                           {label}
                         </option>
@@ -802,7 +807,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
-                      {CATEGORY_LABELS[product.category]}
+                      {siteCategories?.find((c) => c.key === product.category)?.label ?? CATEGORY_LABELS[product.category]}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-700">

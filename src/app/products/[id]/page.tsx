@@ -13,6 +13,7 @@ import {
 import { useProductStore } from "@/store/product-store";
 import { useCartStore } from "@/store/cart-store";
 import { CATEGORY_LABELS } from "@/types/product";
+import { useSiteStore } from "@/store/site-store";
 import ProductCard from "@/components/product/ProductCard";
 import { useState } from "react";
 
@@ -55,6 +56,7 @@ export default function ProductDetailPage() {
     (s) => s.getProductsByCategory
   );
   const addItem = useCartStore((s) => s.addItem);
+  const siteCategories = useSiteStore((s) => s.content.categories);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("description");
@@ -282,7 +284,7 @@ export default function ProductDetailPage() {
             <div className="sticky top-20 space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <span className="inline-block text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full mb-3">
-                  {CATEGORY_LABELS[product.category]}
+                  {siteCategories?.find((c) => c.key === product.category)?.label ?? CATEGORY_LABELS[product.category]}
                 </span>
                 <h1 className="text-2xl font-extrabold text-gray-900 mb-2">
                   {product.name}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Package, Layout, ImageIcon, FileText } from "lucide-react";
+import { Shield, Package, Layout, ImageIcon, FileText, Tag } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useProductStore } from "@/store/product-store";
 import { useSiteStore } from "@/store/site-store";
@@ -55,6 +55,13 @@ export default function AdminDashboard() {
       color: "blue",
     },
     {
+      title: "카테고리 관리",
+      description: `카테고리 ${content.categories?.length ?? 0}개`,
+      icon: Tag,
+      href: "/admin/categories",
+      color: "orange",
+    },
+    {
       title: "배너 관리",
       description: `히어로 배너 ${content.banners.length}개`,
       icon: ImageIcon,
@@ -72,6 +79,7 @@ export default function AdminDashboard() {
 
   const colorMap: Record<string, string> = {
     blue: "bg-blue-50 text-blue-600",
+    orange: "bg-orange-50 text-orange-600",
     purple: "bg-purple-50 text-purple-600",
     green: "bg-green-50 text-green-600",
   };
