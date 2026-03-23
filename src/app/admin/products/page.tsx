@@ -1,11 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Shield,
+  ChevronDown,
+  ChevronUp,
+  Type,
+  ImageIcon,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { useProductStore } from "@/store/product-store";
+import { useAuthStore } from "@/store/auth-store";
 import {
   Product,
   ProductCategory,
+  ProductFAQ,
+  ProductProcess,
+  ContentBlock,
   CATEGORY_LABELS,
 } from "@/types/product";
 
@@ -15,6 +35,10 @@ type FormData = {
   price: string;
   category: ProductCategory;
   features: string;
+  recommendations: string;
+  processSteps: ProductProcess[];
+  faqs: ProductFAQ[];
+  contentBlocks: ContentBlock[];
   isActive: boolean;
 };
 
@@ -24,19 +48,86 @@ const emptyForm: FormData = {
   price: "",
   category: "sns",
   features: "",
+  recommendations: "",
+  processSteps: [
+    { step: 1, title: "", description: "" },
+    { step: 2, title: "", description: "" },
+    { step: 3, title: "", description: "" },
+    { step: 4, title: "", description: "" },
+  ],
+  faqs: [
+    { question: "", answer: "" },
+    { question: "", answer: "" },
+  ],
+  contentBlocks: [],
   isActive: true,
 };
 
+const inputClass =
+  "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+
+function generateBlockId() {
+  return `block_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export default function AdminProductsPage() {
+  const router = useRouter();
   const { products, addProduct, updateProduct, deleteProduct } =
     useProductStore();
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const isAdmin = useAuthStore((s) => s.isAdmin);
+
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
+  const [showDetail, setShowDetail] = useState(false);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // Auth guard
+  if (!currentUser) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          로그인이 필요합니다
+        </h2>
+        <p className="text-gray-500 mb-6">
+          관리자 페이지에 접근하려면 로그인해 주세요.
+        </p>
+        <Link
+          href="/login"
+          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors"
+        >
+          로그인하기
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isAdmin()) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          접근 권한이 없습니다
+        </h2>
+        <p className="text-gray-500 mb-6">
+          관리자 계정으로 로그인해 주세요.
+        </p>
+        <Link
+          href="/"
+          className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors"
+        >
+          홈으로 돌아가기
+        </Link>
+      </div>
+    );
+  }
 
   const openNewForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    setShowDetail(false);
     setShowForm(true);
   };
 
@@ -47,10 +138,110 @@ export default function AdminProductsPage() {
       price: product.price.toString(),
       category: product.category,
       features: product.features.join(", "),
+      recommendations: (product.recommendations || []).join(", "),
+      processSteps:
+        product.processSteps?.length > 0
+          ? product.processSteps
+          : emptyForm.processSteps,
+      faqs:
+        product.faqs?.length > 0 ? product.faqs : emptyForm.faqs,
+      contentBlocks: product.contentBlocks || [],
       isActive: product.isActive,
     });
     setEditingId(product.id);
+    setShowDetail(false);
     setShowForm(true);
+  };
+
+  // Content block helpers
+  const addContentBlock = (type: "text" | "image") => {
+    const newBlock: ContentBlock = {
+      id: generateBlockId(),
+      type,
+      content: "",
+    };
+    setForm({ ...form, contentBlocks: [...form.contentBlocks, newBlock] });
+  };
+
+  const updateContentBlock = (id: string, content: string) => {
+    setForm({
+      ...form,
+      contentBlocks: form.contentBlocks.map((b) =>
+        b.id === id ? { ...b, content } : b
+      ),
+    });
+  };
+
+  const removeContentBlock = (id: string) => {
+    setForm({
+      ...form,
+      contentBlocks: form.contentBlocks.filter((b) => b.id !== id),
+    });
+  };
+
+  const moveContentBlock = (index: number, direction: "up" | "down") => {
+    const blocks = [...form.contentBlocks];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= blocks.length) return;
+    [blocks[index], blocks[target]] = [blocks[target], blocks[index]];
+    setForm({ ...form, contentBlocks: blocks });
+  };
+
+  const handleImageUpload = (blockId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      updateContentBlock(blockId, dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const updateProcessStep = (
+    index: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    const updated = [...form.processSteps];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, processSteps: updated });
+  };
+
+  const addProcessStep = () => {
+    setForm({
+      ...form,
+      processSteps: [
+        ...form.processSteps,
+        { step: form.processSteps.length + 1, title: "", description: "" },
+      ],
+    });
+  };
+
+  const removeProcessStep = (index: number) => {
+    const updated = form.processSteps
+      .filter((_, i) => i !== index)
+      .map((s, i) => ({ ...s, step: i + 1 }));
+    setForm({ ...form, processSteps: updated });
+  };
+
+  const updateFAQ = (
+    index: number,
+    field: "question" | "answer",
+    value: string
+  ) => {
+    const updated = [...form.faqs];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, faqs: updated });
+  };
+
+  const addFAQ = () => {
+    setForm({
+      ...form,
+      faqs: [...form.faqs, { question: "", answer: "" }],
+    });
+  };
+
+  const removeFAQ = (index: number) => {
+    setForm({ ...form, faqs: form.faqs.filter((_, i) => i !== index) });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -65,6 +256,13 @@ export default function AdminProductsPage() {
         .split(",")
         .map((f) => f.trim())
         .filter(Boolean),
+      recommendations: form.recommendations
+        .split(",")
+        .map((r) => r.trim())
+        .filter(Boolean),
+      processSteps: form.processSteps.filter((s) => s.title.trim()),
+      faqs: form.faqs.filter((f) => f.question.trim() && f.answer.trim()),
+      contentBlocks: form.contentBlocks.filter((b) => b.content.trim()),
       isActive: form.isActive,
     };
 
@@ -104,7 +302,7 @@ export default function AdminProductsPage() {
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">
                 {editingId ? "상품 수정" : "새 상품 추가"}
@@ -116,102 +314,452 @@ export default function AdminProductsPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  상품명
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                  placeholder="예: 인스타그램 릴스 패키지"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  설명
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
-                  placeholder="상품 설명을 입력하세요"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* 기본 정보 */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-gray-900 pb-2 border-b border-gray-200">
+                  기본 정보
+                </h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    가격 (원)
+                    상품명 *
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     required
-                    min="0"
-                    value={form.price}
+                    value={form.name}
                     onChange={(e) =>
-                      setForm({ ...form, price: e.target.value })
+                      setForm({ ...form, name: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    placeholder="290000"
+                    className={inputClass}
+                    placeholder="예: 인스타그램 릴스 패키지"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    카테고리
+                    상품 설명 *
                   </label>
-                  <select
-                    value={form.category}
+                  <textarea
+                    required
+                    rows={3}
+                    value={form.description}
                     onChange={(e) =>
-                      setForm({
-                        ...form,
-                        category: e.target.value as ProductCategory,
-                      })
+                      setForm({ ...form, description: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                  >
-                    {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
+                    className={`${inputClass} resize-none`}
+                    placeholder="상품에 대한 상세 설명을 입력하세요"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      가격 (원) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      value={form.price}
+                      onChange={(e) =>
+                        setForm({ ...form, price: e.target.value })
+                      }
+                      className={inputClass}
+                      placeholder="290000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      카테고리
+                    </label>
+                    <select
+                      value={form.category}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          category: e.target.value as ProductCategory,
+                        })
+                      }
+                      className={inputClass}
+                    >
+                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                        <option key={key} value={key}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    포함 사항 (쉼표로 구분)
+                  </label>
+                  <input
+                    type="text"
+                    value={form.features}
+                    onChange={(e) =>
+                      setForm({ ...form, features: e.target.value })
+                    }
+                    className={inputClass}
+                    placeholder="기능1, 기능2, 기능3"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={form.isActive}
+                    onChange={(e) =>
+                      setForm({ ...form, isActive: e.target.checked })
+                    }
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />
+                  <label htmlFor="isActive" className="text-sm text-gray-700">
+                    활성화 (상품 목록에 노출)
+                  </label>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  포함 사항 (쉼표로 구분)
-                </label>
-                <input
-                  type="text"
-                  value={form.features}
-                  onChange={(e) =>
-                    setForm({ ...form, features: e.target.value })
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                  placeholder="기능1, 기능2, 기능3"
-                />
+
+              {/* 블로그형 콘텐츠 에디터 */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                  <h3 className="text-sm font-bold text-gray-900">
+                    상품 상세 콘텐츠
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("text")}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      <Type className="w-3.5 h-3.5" />
+                      글 추가
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("image")}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      이미지 추가
+                    </button>
+                  </div>
+                </div>
+
+                {form.contentBlocks.length === 0 && (
+                  <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
+                    <div className="text-gray-400 mb-3">
+                      <ImageIcon className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                    </div>
+                    <p className="text-sm text-gray-500 mb-1">
+                      블로그처럼 이미지와 글을 자유롭게 구성하세요
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      위의 &quot;글 추가&quot; 또는 &quot;이미지 추가&quot; 버튼을 클릭하여 시작하세요
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {form.contentBlocks.map((block, index) => (
+                    <div
+                      key={block.id}
+                      className="group relative border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 transition-colors"
+                    >
+                      {/* Block toolbar */}
+                      <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase">
+                            {block.type === "text" ? "텍스트" : "이미지"}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {index + 1} / {form.contentBlocks.length}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveContentBlock(index, "up")}
+                            disabled={index === 0}
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveContentBlock(index, "down")}
+                            disabled={index === form.contentBlocks.length - 1}
+                            className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeContentBlock(block.id)}
+                            className="p-1 text-gray-400 hover:text-red-500 rounded ml-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Block content */}
+                      <div className="p-3">
+                        {block.type === "text" ? (
+                          <textarea
+                            value={block.content}
+                            onChange={(e) =>
+                              updateContentBlock(block.id, e.target.value)
+                            }
+                            rows={4}
+                            className="w-full border-0 outline-none resize-none text-sm text-gray-700 placeholder-gray-400 leading-relaxed"
+                            placeholder="텍스트 내용을 입력하세요..."
+                          />
+                        ) : (
+                          <div>
+                            {block.content ? (
+                              <div className="relative">
+                                <img
+                                  src={block.content}
+                                  alt="업로드된 이미지"
+                                  className="w-full max-h-80 object-contain rounded-lg bg-gray-100"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const input = fileInputRefs.current[block.id];
+                                    if (input) input.click();
+                                  }}
+                                  className="absolute bottom-2 right-2 px-3 py-1.5 text-xs font-medium bg-white/90 text-gray-700 rounded-lg shadow hover:bg-white transition-colors"
+                                >
+                                  이미지 변경
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const input = fileInputRefs.current[block.id];
+                                  if (input) input.click();
+                                }}
+                                className="w-full py-10 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center gap-2"
+                              >
+                                <ImageIcon className="w-8 h-8 text-gray-300" />
+                                <span className="text-sm text-gray-500">
+                                  클릭하여 이미지를 업로드하세요
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  JPG, PNG, GIF, WebP
+                                </span>
+                              </button>
+                            )}
+                            <input
+                              ref={(el) => {
+                                fileInputRefs.current[block.id] = el;
+                              }}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handleImageUpload(block.id, file);
+                              }}
+                            />
+                            <input
+                              type="text"
+                              value={block.content.startsWith("data:") ? "" : block.content}
+                              onChange={(e) =>
+                                updateContentBlock(block.id, e.target.value)
+                              }
+                              className={`${inputClass} mt-2`}
+                              placeholder="또는 이미지 URL을 직접 입력하세요"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {form.contentBlocks.length > 0 && (
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("text")}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      글 추가
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addContentBlock("image")}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-600 border border-blue-200 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      이미지 추가
+                    </button>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={form.isActive}
-                  onChange={(e) =>
-                    setForm({ ...form, isActive: e.target.checked })
-                  }
-                  className="w-4 h-4 text-blue-600 rounded"
-                />
-                <label htmlFor="isActive" className="text-sm text-gray-700">
-                  활성화 (상품 목록에 노출)
-                </label>
-              </div>
+
+              {/* 상세 정보 토글 */}
+              <button
+                type="button"
+                onClick={() => setShowDetail(!showDetail)}
+                className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 w-full py-2"
+              >
+                {showDetail ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+                추가 정보 편집 (추천 대상, 진행 과정, FAQ)
+              </button>
+
+              {showDetail && (
+                <div className="space-y-6 border-t border-gray-100 pt-5">
+                  {/* 추천 대상 */}
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900 pb-2 border-b border-gray-200 mb-3">
+                      추천 대상 (쉼표로 구분)
+                    </h3>
+                    <input
+                      type="text"
+                      value={form.recommendations}
+                      onChange={(e) =>
+                        setForm({ ...form, recommendations: e.target.value })
+                      }
+                      className={inputClass}
+                      placeholder="마케팅을 처음 시작하는 자영업자, 비용 대비 효과적인 마케팅을 원하시는 분"
+                    />
+                  </div>
+
+                  {/* 진행 과정 */}
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-gray-200 mb-3">
+                      <h3 className="text-sm font-bold text-gray-900">
+                        진행 과정
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={addProcessStep}
+                        className="text-xs text-blue-600 font-semibold hover:text-blue-700"
+                      >
+                        + 단계 추가
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {form.processSteps.map((step, i) => (
+                        <div
+                          key={i}
+                          className="flex gap-3 items-start bg-gray-50 p-3 rounded-lg"
+                        >
+                          <span className="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                            {i + 1}
+                          </span>
+                          <div className="flex-1 space-y-2">
+                            <input
+                              type="text"
+                              value={step.title}
+                              onChange={(e) =>
+                                updateProcessStep(i, "title", e.target.value)
+                              }
+                              className={inputClass}
+                              placeholder="단계 제목"
+                            />
+                            <input
+                              type="text"
+                              value={step.description}
+                              onChange={(e) =>
+                                updateProcessStep(
+                                  i,
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              className={inputClass}
+                              placeholder="설명"
+                            />
+                          </div>
+                          {form.processSteps.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeProcessStep(i)}
+                              className="text-gray-400 hover:text-red-500 mt-0.5"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* FAQ */}
+                  <div>
+                    <div className="flex items-center justify-between pb-2 border-b border-gray-200 mb-3">
+                      <h3 className="text-sm font-bold text-gray-900">
+                        자주 묻는 질문 (FAQ)
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={addFAQ}
+                        className="text-xs text-blue-600 font-semibold hover:text-blue-700"
+                      >
+                        + 질문 추가
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {form.faqs.map((faq, i) => (
+                        <div
+                          key={i}
+                          className="bg-gray-50 p-3 rounded-lg space-y-2"
+                        >
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs font-bold text-blue-600 mt-2.5 shrink-0">
+                              Q.
+                            </span>
+                            <input
+                              type="text"
+                              value={faq.question}
+                              onChange={(e) =>
+                                updateFAQ(i, "question", e.target.value)
+                              }
+                              className={`${inputClass} flex-1`}
+                              placeholder="질문을 입력하세요"
+                            />
+                            {form.faqs.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeFAQ(i)}
+                                className="text-gray-400 hover:text-red-500 mt-2"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs font-bold text-gray-500 mt-2.5 shrink-0">
+                              A.
+                            </span>
+                            <textarea
+                              value={faq.answer}
+                              onChange={(e) =>
+                                updateFAQ(i, "answer", e.target.value)
+                              }
+                              rows={2}
+                              className={`${inputClass} flex-1 resize-none`}
+                              placeholder="답변을 입력하세요"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
                 className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors"
@@ -275,15 +823,17 @@ export default function AdminProductsPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openEditForm(product)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="w-3.5 h-3.5" />
+                        수정
                       </button>
                       <button
                         onClick={() => handleDelete(product.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
+                        삭제
                       </button>
                     </div>
                   </td>

@@ -1,3 +1,20 @@
+export interface ContentBlock {
+  id: string;
+  type: "text" | "image";
+  content: string; // text content or image URL
+}
+
+export interface ProductFAQ {
+  question: string;
+  answer: string;
+}
+
+export interface ProductProcess {
+  step: number;
+  title: string;
+  description: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -6,6 +23,10 @@ export interface Product {
   category: ProductCategory;
   image: string;
   features: string[];
+  recommendations: string[];
+  processSteps: ProductProcess[];
+  faqs: ProductFAQ[];
+  contentBlocks: ContentBlock[];
   isActive: boolean;
   createdAt: string;
 }
