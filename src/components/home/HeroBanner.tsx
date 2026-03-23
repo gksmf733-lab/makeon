@@ -47,7 +47,7 @@ export default function HeroBanner() {
       {slide.image ? (
         /* 이미지가 있으면 이미지 자체가 배너 */
         <Link href={slide.link} className="block">
-          <div className="relative w-full aspect-[21/9] md:aspect-[3/1]">
+          <div className="relative w-full h-[300px] md:h-[400px]">
             <Image
               src={slide.image}
               alt={slide.title}
