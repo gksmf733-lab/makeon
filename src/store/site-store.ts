@@ -3,6 +3,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface CategoryItem {
+  id: string;
+  key: string; // 영문 키 (예: "sns", "blog")
+  label: string; // 표시 이름 (예: "SNS 마케팅")
+  isActive: boolean;
+}
+
 export interface BannerSlide {
   id: string;
   title: string;
@@ -10,7 +17,8 @@ export interface BannerSlide {
   link: string;
   bgColor: string;
   isActive: boolean;
-  image?: string; // base64 data URL
+  image?: string; // deprecated: 기존 base64 호환용
+  imageKey?: string; // IndexedDB 참조 키
 }
 
 export interface ValueProp {
@@ -21,6 +29,8 @@ export interface ValueProp {
 }
 
 export interface SiteContent {
+  // 카테고리
+  categories: CategoryItem[];
   // 히어로 배너
   banners: BannerSlide[];
   // 가치 제안 섹션
@@ -43,6 +53,14 @@ export interface SiteContent {
 }
 
 const defaultContent: SiteContent = {
+  categories: [
+    { id: "c1", key: "sns", label: "SNS 마케팅", isActive: true },
+    { id: "c2", key: "blog", label: "블로그 마케팅", isActive: true },
+    { id: "c3", key: "review", label: "리뷰 마케팅", isActive: true },
+    { id: "c4", key: "ad", label: "광고 대행", isActive: true },
+    { id: "c5", key: "seo", label: "SEO 최적화", isActive: true },
+    { id: "c6", key: "design", label: "디자인 제작", isActive: true },
+  ],
   banners: [
     {
       id: "b1",
@@ -106,6 +124,9 @@ const defaultContent: SiteContent = {
 interface SiteState {
   content: SiteContent;
   updateContent: (updates: Partial<SiteContent>) => void;
+  addCategory: (category: Omit<CategoryItem, "id">) => void;
+  updateCategory: (id: string, updates: Partial<CategoryItem>) => void;
+  deleteCategory: (id: string) => void;
   addBanner: (banner: Omit<BannerSlide, "id">) => void;
   updateBanner: (id: string, updates: Partial<BannerSlide>) => void;
   deleteBanner: (id: string) => void;
@@ -122,6 +143,35 @@ export const useSiteStore = create<SiteState>()(
       updateContent: (updates) =>
         set((state) => ({
           content: { ...state.content, ...updates },
+        })),
+
+      addCategory: (category) =>
+        set((state) => ({
+          content: {
+            ...state.content,
+            categories: [
+              ...state.content.categories,
+              { ...category, id: `c_${Date.now()}` },
+            ],
+          },
+        })),
+
+      updateCategory: (id, updates) =>
+        set((state) => ({
+          content: {
+            ...state.content,
+            categories: state.content.categories.map((c) =>
+              c.id === id ? { ...c, ...updates } : c
+            ),
+          },
+        })),
+
+      deleteCategory: (id) =>
+        set((state) => ({
+          content: {
+            ...state.content,
+            categories: state.content.categories.filter((c) => c.id !== id),
+          },
         })),
 
       addBanner: (banner) =>

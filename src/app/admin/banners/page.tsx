@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore, BannerSlide } from "@/store/site-store";
+import { saveImage, getImage, deleteImage } from "@/lib/image-db";
 
 const inputClass =
   "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
@@ -36,7 +37,7 @@ type FormData = {
   link: string;
   bgColor: string;
   isActive: boolean;
-  image?: string;
+  imageKey?: string;
 };
 
 const emptyForm: FormData = {
@@ -45,12 +46,10 @@ const emptyForm: FormData = {
   link: "/products",
   bgColor: BG_OPTIONS[0].value,
   isActive: true,
-  image: undefined,
+  imageKey: undefined,
 };
 
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
-
-function resizeImage(file: File, maxWidth = 800): Promise<string> {
+function resizeImage(file: File, maxWidth = 1920): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -63,7 +62,7 @@ function resizeImage(file: File, maxWidth = 800): Promise<string> {
         const ctx = canvas.getContext("2d");
         if (!ctx) return reject(new Error("Canvas not supported"));
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/webp", 0.8));
+        resolve(canvas.toDataURL("image/webp", 0.85));
       };
       img.onerror = reject;
       img.src = e.target?.result as string;
@@ -81,7 +80,25 @@ export default function AdminBannersPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
+  const [formImagePreview, setFormImagePreview] = useState<string | undefined>();
+  const [bannerImages, setBannerImages] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 배너 목록의 이미지를 IndexedDB에서 로드
+  const loadBannerImages = useCallback(async () => {
+    const images: Record<string, string> = {};
+    for (const banner of content.banners) {
+      if (banner.imageKey) {
+        const dataUrl = await getImage(banner.imageKey);
+        if (dataUrl) images[banner.id] = dataUrl;
+      }
+    }
+    setBannerImages(images);
+  }, [content.banners]);
+
+  useEffect(() => {
+    loadBannerImages();
+  }, [loadBannerImages]);
 
   if (!currentUser || !isAdmin()) {
     return (
@@ -102,19 +119,26 @@ export default function AdminBannersPage() {
 
   const openNewForm = () => {
     setForm(emptyForm);
+    setFormImagePreview(undefined);
     setEditingId(null);
     setShowForm(true);
   };
 
-  const openEditForm = (banner: BannerSlide) => {
+  const openEditForm = async (banner: BannerSlide) => {
     setForm({
       title: banner.title,
       subtitle: banner.subtitle,
       link: banner.link,
       bgColor: banner.bgColor,
       isActive: banner.isActive,
-      image: banner.image,
+      imageKey: banner.imageKey,
     });
+    if (banner.imageKey) {
+      const dataUrl = await getImage(banner.imageKey);
+      setFormImagePreview(dataUrl);
+    } else {
+      setFormImagePreview(undefined);
+    }
     setEditingId(banner.id);
     setShowForm(true);
   };
@@ -126,43 +150,61 @@ export default function AdminBannersPage() {
       alert("이미지 파일만 업로드 가능합니다.");
       return;
     }
-    if (file.size > MAX_IMAGE_SIZE * 5) {
+    if (file.size > 10 * 1024 * 1024) {
       alert("파일 크기가 너무 큽니다. (최대 10MB)");
       return;
     }
     try {
-      const dataUrl = await resizeImage(file, 1200);
-      // localStorage 용량 초과 방지: base64 크기 체크
-      if (dataUrl.length > 1.5 * 1024 * 1024) {
-        // 너무 크면 더 작게 리사이즈
-        const smallerDataUrl = await resizeImage(file, 800);
-        setForm({ ...form, image: smallerDataUrl });
-      } else {
-        setForm({ ...form, image: dataUrl });
+      const dataUrl = await resizeImage(file, 1920);
+      const imageKey = `banner_${Date.now()}`;
+      await saveImage(imageKey, dataUrl);
+      // 이전 이미지 키가 있으면 삭제
+      if (form.imageKey) {
+        await deleteImage(form.imageKey);
       }
+      setForm({ ...form, imageKey });
+      setFormImagePreview(dataUrl);
     } catch {
       alert("이미지 처리 중 오류가 발생했습니다.");
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        updateBanner(editingId, form);
-      } else {
-        addBanner(form);
-      }
-      setShowForm(false);
-      setEditingId(null);
-    } catch {
-      alert("저장에 실패했습니다. 이미지 용량이 너무 클 수 있습니다. 더 작은 이미지를 사용해 주세요.");
+  const handleRemoveImage = async () => {
+    if (form.imageKey) {
+      await deleteImage(form.imageKey);
     }
+    setForm({ ...form, imageKey: undefined });
+    setFormImagePreview(undefined);
   };
 
-  const handleDelete = (id: string) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const bannerData = {
+      title: form.title,
+      subtitle: form.subtitle,
+      link: form.link,
+      bgColor: form.bgColor,
+      isActive: form.isActive,
+      imageKey: form.imageKey,
+    };
+    if (editingId) {
+      updateBanner(editingId, bannerData);
+    } else {
+      addBanner(bannerData);
+    }
+    setShowForm(false);
+    setEditingId(null);
+    setFormImagePreview(undefined);
+    loadBannerImages();
+  };
+
+  const handleDelete = async (id: string) => {
     if (confirm("이 배너를 삭제하시겠습니까?")) {
+      const banner = content.banners.find((b) => b.id === id);
+      if (banner?.imageKey) {
+        await deleteImage(banner.imageKey);
+      }
       deleteBanner(id);
     }
   };
@@ -194,7 +236,7 @@ export default function AdminBannersPage() {
       {/* Modal Form */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">
                 {editingId ? "배너 수정" : "새 배너 추가"}
@@ -259,10 +301,10 @@ export default function AdminBannersPage() {
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                {form.image ? (
+                {formImagePreview ? (
                   <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                     <Image
-                      src={form.image}
+                      src={formImagePreview}
                       alt="배너 이미지"
                       fill
                       className="object-cover"
@@ -277,7 +319,7 @@ export default function AdminBannersPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setForm({ ...form, image: undefined })}
+                        onClick={handleRemoveImage}
                         className="bg-red-500/90 hover:bg-red-500 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg shadow-sm transition-colors"
                       >
                         삭제
@@ -295,7 +337,7 @@ export default function AdminBannersPage() {
                       클릭하여 이미지 업로드
                     </span>
                     <span className="text-xs">
-                      JPG, PNG, WebP (최대 10MB, 자동 리사이즈)
+                      JPG, PNG, WebP (최대 10MB, 1920px 자동 리사이즈)
                     </span>
                   </button>
                 )}
@@ -303,7 +345,7 @@ export default function AdminBannersPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  배경 색상
+                  배경 색상 (이미지 없을 때 사용)
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {BG_OPTIONS.map((opt) => (
@@ -345,28 +387,39 @@ export default function AdminBannersPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   미리보기
                 </label>
-                <div
-                  className={`bg-gradient-to-br ${form.bgColor} text-white rounded-xl p-6 flex items-center gap-4`}
-                >
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold">
-                      {form.title || "배너 제목"}
-                    </h3>
-                    <p className="text-white/80 text-sm mt-1">
-                      {form.subtitle || "배너 부제목"}
-                    </p>
-                  </div>
-                  {form.image && (
-                    <div className="relative w-24 h-18 rounded-lg overflow-hidden shrink-0">
-                      <Image
-                        src={form.image}
-                        alt="미리보기"
-                        fill
-                        className="object-cover"
-                      />
+                {formImagePreview ? (
+                  <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden">
+                    <Image
+                      src={formImagePreview}
+                      alt="미리보기"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <h3 className="text-lg font-bold">
+                          {form.title || "배너 제목"}
+                        </h3>
+                        <p className="text-white/80 text-sm mt-1">
+                          {form.subtitle || "배너 부제목"}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`bg-gradient-to-br ${form.bgColor} text-white rounded-xl p-6 flex items-center gap-4`}
+                  >
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold">
+                        {form.title || "배너 제목"}
+                      </h3>
+                      <p className="text-white/80 text-sm mt-1">
+                        {form.subtitle || "배너 부제목"}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button
@@ -388,10 +441,10 @@ export default function AdminBannersPage() {
             className={`bg-gradient-to-r ${banner.bgColor} rounded-2xl overflow-hidden shadow-sm`}
           >
             <div className="p-6 flex items-center gap-4">
-              {banner.image ? (
+              {bannerImages[banner.id] ? (
                 <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-white/10">
                   <Image
-                    src={banner.image}
+                    src={bannerImages[banner.id]}
                     alt={banner.title}
                     fill
                     className="object-cover"
