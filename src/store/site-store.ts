@@ -10,6 +10,7 @@ export interface BannerSlide {
   link: string;
   bgColor: string;
   isActive: boolean;
+  image?: string; // base64 data URL
 }
 
 export interface ValueProp {
