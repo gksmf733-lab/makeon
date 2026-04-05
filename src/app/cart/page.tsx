@@ -51,9 +51,10 @@ export default function CartPage() {
               clearCart();
             }
           }}
-          className="flex items-center gap-1.5 text-red-500 hover:text-red-700 text-sm font-medium transition-colors"
+          className="flex items-center gap-1.5 text-red-500 hover:text-red-700 focus-visible:text-red-700 text-sm font-medium transition-colors"
+          aria-label="장바구니 전체 삭제"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
           전체 삭제
         </button>
       </div>

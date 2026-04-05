@@ -62,7 +62,7 @@ export default function HeroBanner() {
   const slideImage = bannerImages[slide.id];
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden" aria-roledescription="캐러셀" aria-label="프로모션 배너">
       {slideImage ? (
         /* 이미지가 있으면 이미지 자체가 배너 */
         <Link href={slide.link} className="block">
@@ -119,7 +119,7 @@ export default function HeroBanner() {
           </button>
 
           {/* Dots */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" role="group" aria-label="배너 슬라이드 선택">
             {activeBanners.map((_, i) => (
               <button
                 key={i}
@@ -128,6 +128,7 @@ export default function HeroBanner() {
                   i === current ? "bg-white" : "bg-white/40"
                 }`}
                 aria-label={`배너 ${i + 1}`}
+                aria-current={i === current ? "true" : undefined}
               />
             ))}
           </div>

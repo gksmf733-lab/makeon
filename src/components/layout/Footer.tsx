@@ -15,14 +15,14 @@ export default function Footer() {
               {content.footerDescription}
             </p>
           </div>
-          <div>
+          <nav aria-label="서비스 목록">
             <h4 className="text-white font-semibold mb-3">서비스</h4>
             <ul className="space-y-2 text-sm">
               {content.footerServices.map((service, i) => (
                 <li key={i}>{service}</li>
               ))}
             </ul>
-          </div>
+          </nav>
           <div>
             <h4 className="text-white font-semibold mb-3">고객지원</h4>
             <ul className="space-y-2 text-sm">

@@ -41,42 +41,48 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div id="login-error" role="alert" className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <label htmlFor="login-username" className="block text-sm font-semibold text-gray-700 mb-1">
                 아이디
               </label>
               <input
+                id="login-username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="아이디 입력"
                 required
+                aria-required="true"
+                aria-describedby={error ? "login-error" : undefined}
                 className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <label htmlFor="login-password" className="block text-sm font-semibold text-gray-700 mb-1">
                 비밀번호
               </label>
               <input
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호 입력"
                 required
+                aria-required="true"
+                aria-describedby={error ? "login-error" : undefined}
                 className={inputClass}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors mt-2"
+              className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 active:bg-blue-800 transition-colors mt-2"
             >
               로그인
             </button>
