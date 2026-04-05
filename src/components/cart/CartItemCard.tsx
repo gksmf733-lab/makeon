@@ -2,7 +2,7 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { CartItem, CATEGORY_LABELS } from "@/types/product";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, MAX_QUANTITY } from "@/store/cart-store";
 import { useSiteStore } from "@/store/site-store";
 
 interface CartItemCardProps {
@@ -53,7 +53,8 @@ export default function CartItemCard({ item }: CartItemCardProps) {
         <span className="w-8 text-center font-bold">{item.quantity}</span>
         <button
           onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          disabled={item.quantity >= MAX_QUANTITY}
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           <Plus className="w-4 h-4" />
         </button>
