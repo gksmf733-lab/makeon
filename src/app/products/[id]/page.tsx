@@ -18,6 +18,18 @@ import ProductCard from "@/components/product/ProductCard";
 import { useState } from "react";
 import { useHydrated } from "@/hooks/useHydrated";
 
+function isSafeImageSrc(src: string): boolean {
+  if (!src) return false;
+  if (src.startsWith("data:image/")) return true;
+  if (src.startsWith("blob:")) return true;
+  try {
+    const url = new URL(src, window.location.origin);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 const CATEGORY_EMOJI: Record<string, string> = {
   sns: "📱",
   blog: "📝",
@@ -201,7 +213,7 @@ export default function ProductDetailPage() {
                               <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
                                 {block.content}
                               </p>
-                            ) : (
+                            ) : isSafeImageSrc(block.content) ? (
                               <div className="rounded-xl overflow-hidden">
                                 <img
                                   src={block.content}
@@ -209,7 +221,7 @@ export default function ProductDetailPage() {
                                   className="w-full object-contain"
                                 />
                               </div>
-                            )}
+                            ) : null}
                           </div>
                         ))}
                       </div>
