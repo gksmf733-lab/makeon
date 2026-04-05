@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth-store";
 import { UserRegisterInput } from "@/types/user";
+import { authInputClass as inputClass } from "@/lib/styles";
+import { formatPhone, formatBusinessNumber } from "@/lib/utils";
 
 const INDUSTRY_OPTIONS = [
   "음식점/카페",
@@ -43,20 +45,6 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const formatPhone = (value: string) => {
-    const nums = value.replace(/\D/g, "").slice(0, 11);
-    if (nums.length <= 3) return nums;
-    if (nums.length <= 7) return `${nums.slice(0, 3)}-${nums.slice(3)}`;
-    return `${nums.slice(0, 3)}-${nums.slice(3, 7)}-${nums.slice(7)}`;
-  };
-
-  const formatBusinessNumber = (value: string) => {
-    const nums = value.replace(/\D/g, "").slice(0, 10);
-    if (nums.length <= 3) return nums;
-    if (nums.length <= 5) return `${nums.slice(0, 3)}-${nums.slice(3)}`;
-    return `${nums.slice(0, 3)}-${nums.slice(3, 5)}-${nums.slice(5)}`;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -79,9 +67,6 @@ export default function RegisterPage() {
     alert("회원가입이 완료되었습니다. 로그인해 주세요.");
     router.push("/login");
   };
-
-  const inputClass =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition";
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">

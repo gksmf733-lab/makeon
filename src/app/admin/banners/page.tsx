@@ -8,19 +8,16 @@ import {
   Pencil,
   Trash2,
   X,
-  Shield,
   ArrowLeft,
   Eye,
   EyeOff,
   Upload,
   ImageIcon,
 } from "lucide-react";
-import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore, BannerSlide } from "@/store/site-store";
 import { saveImage, getImage, deleteImage } from "@/lib/image-db";
-
-const inputClass =
-  "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
+import { inputClass } from "@/lib/styles";
 
 const BG_OPTIONS = [
   { value: "from-blue-600 via-blue-700 to-indigo-800", label: "파란색" },
@@ -73,8 +70,14 @@ function resizeImage(file: File, maxWidth = 1920): Promise<string> {
 }
 
 export default function AdminBannersPage() {
-  const currentUser = useAuthStore((s) => s.currentUser);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  return (
+    <AdminAuthGuard>
+      <AdminBannersContent />
+    </AdminAuthGuard>
+  );
+}
+
+function AdminBannersContent() {
   const { content, addBanner, updateBanner, deleteBanner } = useSiteStore();
 
   const [showForm, setShowForm] = useState(false);
@@ -99,23 +102,6 @@ export default function AdminBannersPage() {
   useEffect(() => {
     loadBannerImages();
   }, [loadBannerImages]);
-
-  if (!currentUser || !isAdmin()) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          접근 권한이 없습니다
-        </h2>
-        <Link
-          href="/"
-          className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors mt-4"
-        >
-          홈으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const openNewForm = () => {
     setForm(emptyForm);

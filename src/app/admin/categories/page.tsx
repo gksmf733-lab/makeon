@@ -7,17 +7,14 @@ import {
   Pencil,
   Trash2,
   X,
-  Shield,
   ArrowLeft,
   Eye,
   EyeOff,
   Tag,
 } from "lucide-react";
-import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore, CategoryItem } from "@/store/site-store";
-
-const inputClass =
-  "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
+import { inputClass } from "@/lib/styles";
 
 type FormData = {
   key: string;
@@ -32,31 +29,20 @@ const emptyForm: FormData = {
 };
 
 export default function AdminCategoriesPage() {
-  const currentUser = useAuthStore((s) => s.currentUser);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  return (
+    <AdminAuthGuard>
+      <AdminCategoriesContent />
+    </AdminAuthGuard>
+  );
+}
+
+function AdminCategoriesContent() {
   const { content, addCategory, updateCategory, deleteCategory } =
     useSiteStore();
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
-
-  if (!currentUser || !isAdmin()) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          접근 권한이 없습니다
-        </h2>
-        <Link
-          href="/"
-          className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors mt-4"
-        >
-          홈으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const openNewForm = () => {
     setForm(emptyForm);

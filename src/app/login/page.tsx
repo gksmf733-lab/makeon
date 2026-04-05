@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth-store";
+import { authInputClass as inputClass } from "@/lib/styles";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,8 +27,6 @@ export default function LoginPage() {
     router.push("/");
   };
 
-  const inputClass =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition";
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
@@ -60,6 +59,7 @@ export default function LoginPage() {
                 required
                 aria-required="true"
                 aria-describedby={error ? "login-error" : undefined}
+                autoComplete="username"
                 className={inputClass}
               />
             </div>
@@ -76,6 +76,7 @@ export default function LoginPage() {
                 required
                 aria-required="true"
                 aria-describedby={error ? "login-error" : undefined}
+                autoComplete="current-password"
                 className={inputClass}
               />
             </div>
