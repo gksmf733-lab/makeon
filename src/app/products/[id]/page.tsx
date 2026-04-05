@@ -11,11 +11,12 @@ import {
   Star,
 } from "lucide-react";
 import { useProductStore } from "@/store/product-store";
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, MAX_QUANTITY } from "@/store/cart-store";
 import { CATEGORY_LABELS } from "@/types/product";
 import { useSiteStore } from "@/store/site-store";
 import ProductCard from "@/components/product/ProductCard";
 import { useState } from "react";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const CATEGORY_EMOJI: Record<string, string> = {
   sns: "📱",
@@ -60,8 +61,18 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("description");
+  const hydrated = useHydrated();
 
   const product = getProductById(id as string);
+
+  if (!hydrated) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-20 flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+        <p className="mt-4 text-gray-500 text-sm">로딩 중...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -316,8 +327,9 @@ export default function ProductDetailPage() {
                         {quantity}
                       </span>
                       <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50"
+                        onClick={() => setQuantity(Math.min(quantity + 1, MAX_QUANTITY))}
+                        disabled={quantity >= MAX_QUANTITY}
+                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         +
                       </button>

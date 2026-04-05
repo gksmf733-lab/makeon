@@ -3,6 +3,8 @@
 import { create } from "zustand";
 import { CartItem, Product } from "@/types/product";
 
+export const MAX_QUANTITY = 99;
+
 interface CartState {
   items: CartItem[];
   addItem: (product: Product, quantity?: number) => void;
@@ -25,7 +27,11 @@ const loadCartFromStorage = (): CartItem[] => {
 
 const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === "undefined") return;
-  localStorage.setItem("makeon-cart", JSON.stringify(items));
+  try {
+    localStorage.setItem("makeon-cart", JSON.stringify(items));
+  } catch (e) {
+    console.error("장바구니 저장 실패:", e);
+  }
 };
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -40,7 +46,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       if (existing) {
         newItems = state.items.map((item) =>
           item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: Math.min(item.quantity + quantity, MAX_QUANTITY) }
             : item
         );
       } else {
@@ -62,7 +68,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   updateQuantity: (productId, quantity) => {
-    if (quantity < 1) return;
+    if (quantity < 1 || quantity > MAX_QUANTITY) return;
     set((state) => {
       const newItems = state.items.map((item) =>
         item.product.id === productId ? { ...item, quantity } : item

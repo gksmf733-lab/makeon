@@ -21,6 +21,7 @@ import {
 import { useProductStore } from "@/store/product-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore } from "@/store/site-store";
+import { useCartStore } from "@/store/cart-store";
 import {
   Product,
   ProductCategory,
@@ -280,6 +281,7 @@ export default function AdminProductsPage() {
   const handleDelete = (id: string) => {
     if (confirm("정말 삭제하시겠습니까?")) {
       deleteProduct(id);
+      useCartStore.getState().removeItem(id);
     }
   };
 
