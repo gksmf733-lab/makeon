@@ -4,9 +4,24 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "MakeOn - 자영업자 셀프 마케팅 플랫폼",
+  title: {
+    default: "MakeOn - 자영업자 셀프 마케팅 플랫폼",
+    template: "%s | MakeOn",
+  },
   description:
     "자영업자를 위한 셀프 자동화 마케팅 상품 쇼핑몰. SNS 마케팅, 블로그 마케팅, 리뷰 관리, SEO 최적화까지.",
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: "MakeOn",
+    title: "MakeOn - 자영업자 셀프 마케팅 플랫폼",
+    description:
+      "자영업자를 위한 셀프 자동화 마케팅 상품 쇼핑몰. SNS 마케팅, 블로그 마케팅, 리뷰 관리, SEO 최적화까지.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
