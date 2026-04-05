@@ -9,7 +9,6 @@ import {
   Pencil,
   Trash2,
   X,
-  Shield,
   ChevronDown,
   ChevronUp,
   Type,
@@ -19,7 +18,6 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useProductStore } from "@/store/product-store";
-import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore } from "@/store/site-store";
 import { useCartStore } from "@/store/cart-store";
 import {
@@ -30,6 +28,9 @@ import {
   ContentBlock,
   CATEGORY_LABELS,
 } from "@/types/product";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
+import { inputClass } from "@/lib/styles";
+import { generateBlockId } from "@/lib/utils";
 
 type FormData = {
   name: string;
@@ -65,19 +66,18 @@ const emptyForm: FormData = {
   isActive: true,
 };
 
-const inputClass =
-  "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
-
-function generateBlockId() {
-  return `block_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+export default function AdminProductsPage() {
+  return (
+    <AdminAuthGuard>
+      <AdminProductsContent />
+    </AdminAuthGuard>
+  );
 }
 
-export default function AdminProductsPage() {
+function AdminProductsContent() {
   const router = useRouter();
   const { products, addProduct, updateProduct, deleteProduct } =
     useProductStore();
-  const currentUser = useAuthStore((s) => s.currentUser);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
   const siteCategories = useSiteStore((s) => s.content.categories);
 
   const [showForm, setShowForm] = useState(false);
@@ -85,47 +85,6 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState<FormData>(emptyForm);
   const [showDetail, setShowDetail] = useState(false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-
-  // Auth guard
-  if (!currentUser) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          로그인이 필요합니다
-        </h2>
-        <p className="text-gray-500 mb-6">
-          관리자 페이지에 접근하려면 로그인해 주세요.
-        </p>
-        <Link
-          href="/login"
-          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors"
-        >
-          로그인하기
-        </Link>
-      </div>
-    );
-  }
-
-  if (!isAdmin()) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          접근 권한이 없습니다
-        </h2>
-        <p className="text-gray-500 mb-6">
-          관리자 계정으로 로그인해 주세요.
-        </p>
-        <Link
-          href="/"
-          className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors"
-        >
-          홈으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const openNewForm = () => {
     setForm(emptyForm);

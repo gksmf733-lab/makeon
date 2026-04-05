@@ -1,50 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Shield, Package, Layout, ImageIcon, FileText, Tag } from "lucide-react";
-import { useAuthStore } from "@/store/auth-store";
+import { Package, ImageIcon, FileText, Tag } from "lucide-react";
 import { useProductStore } from "@/store/product-store";
 import { useSiteStore } from "@/store/site-store";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
 
 export default function AdminDashboard() {
-  const currentUser = useAuthStore((s) => s.currentUser);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  return (
+    <AdminAuthGuard>
+      <AdminDashboardContent />
+    </AdminAuthGuard>
+  );
+}
+
+function AdminDashboardContent() {
   const products = useProductStore((s) => s.products);
   const content = useSiteStore((s) => s.content);
-
-  if (!currentUser) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          로그인이 필요합니다
-        </h2>
-        <Link
-          href="/login"
-          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors mt-4"
-        >
-          로그인하기
-        </Link>
-      </div>
-    );
-  }
-
-  if (!isAdmin()) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          접근 권한이 없습니다
-        </h2>
-        <Link
-          href="/"
-          className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors mt-4"
-        >
-          홈으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const menuItems = [
     {

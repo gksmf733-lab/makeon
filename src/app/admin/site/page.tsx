@@ -6,15 +6,12 @@ import {
   Plus,
   Trash2,
   X,
-  Shield,
   ArrowLeft,
   Save,
 } from "lucide-react";
-import { useAuthStore } from "@/store/auth-store";
 import { useSiteStore, ValueProp } from "@/store/site-store";
-
-const inputClass =
-  "w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm";
+import AdminAuthGuard from "@/components/admin/AdminAuthGuard";
+import { inputClass } from "@/lib/styles";
 
 const COLOR_OPTIONS: { value: ValueProp["color"]; label: string; bg: string }[] = [
   { value: "blue", label: "파란색", bg: "bg-blue-100 text-blue-700" },
@@ -26,8 +23,14 @@ const COLOR_OPTIONS: { value: ValueProp["color"]; label: string; bg: string }[] 
 ];
 
 export default function AdminSitePage() {
-  const currentUser = useAuthStore((s) => s.currentUser);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
+  return (
+    <AdminAuthGuard>
+      <AdminSiteContent />
+    </AdminAuthGuard>
+  );
+}
+
+function AdminSiteContent() {
   const {
     content,
     updateContent,
@@ -51,18 +54,6 @@ export default function AdminSitePage() {
   const [footerPhone, setFooterPhone] = useState(content.footerPhone);
   const [footerHours, setFooterHours] = useState(content.footerHours);
   const [footerCopyright, setFooterCopyright] = useState(content.footerCopyright);
-
-  if (!currentUser || !isAdmin()) {
-    return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">접근 권한이 없습니다</h2>
-        <Link href="/" className="inline-block bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors mt-4">
-          홈으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const handleSaveAll = () => {
     updateContent({
