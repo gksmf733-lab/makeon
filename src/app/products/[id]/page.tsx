@@ -159,18 +159,22 @@ export default function ProductDetailPage() {
 
             {/* Tabs */}
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              <div className="flex border-b border-gray-100">
+              <div className="flex border-b border-gray-100" role="tablist" aria-label="상품 정보 탭">
                 {tabs.map((tab) => (
                   <button
                     key={tab.key}
+                    role="tab"
+                    aria-selected={activeTab === tab.key}
+                    aria-controls={`tabpanel-${tab.key}`}
+                    id={`tab-${tab.key}`}
                     onClick={() => setActiveTab(tab.key)}
                     className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-colors ${
                       activeTab === tab.key
                         ? "text-blue-600 border-b-2 border-blue-600"
-                        : "text-gray-500 hover:text-gray-700"
+                        : "text-gray-500 hover:text-gray-700 focus-visible:text-gray-700"
                     }`}
                   >
-                    {tab.icon}
+                    <span aria-hidden="true">{tab.icon}</span>
                     {tab.label}
                   </button>
                 ))}
@@ -178,7 +182,7 @@ export default function ProductDetailPage() {
 
               <div className="p-6 md:p-8">
                 {activeTab === "description" && (
-                  <div className="space-y-6">
+                  <div role="tabpanel" id="tabpanel-description" aria-labelledby="tab-description" className="space-y-6">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3">
                         상품 소개
@@ -201,7 +205,7 @@ export default function ProductDetailPage() {
                               <div className="rounded-xl overflow-hidden">
                                 <img
                                   src={block.content}
-                                  alt=""
+                                  alt="상품 상세 이미지"
                                   className="w-full object-contain"
                                 />
                               </div>
@@ -247,7 +251,7 @@ export default function ProductDetailPage() {
                 )}
 
                 {activeTab === "process" && (
-                  <div className="space-y-1">
+                  <div role="tabpanel" id="tabpanel-process" aria-labelledby="tab-process" className="space-y-1">
                     {processSteps.map((item) => (
                       <div
                         key={item.step}
@@ -270,7 +274,7 @@ export default function ProductDetailPage() {
                 )}
 
                 {activeTab === "faq" && (
-                  <div className="space-y-4">
+                  <div role="tabpanel" id="tabpanel-faq" aria-labelledby="tab-faq" className="space-y-4">
                     {faqs.map((item, i) => (
                       <div
                         key={i}
@@ -319,17 +323,20 @@ export default function ProductDetailPage() {
                         onClick={() =>
                           setQuantity(Math.max(1, quantity - 1))
                         }
-                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50"
+                        disabled={quantity <= 1}
+                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="수량 줄이기"
                       >
                         -
                       </button>
-                      <span className="w-10 text-center font-bold text-lg">
+                      <span className="w-10 text-center font-bold text-lg" aria-live="polite" aria-atomic="true">
                         {quantity}
                       </span>
                       <button
                         onClick={() => setQuantity(Math.min(quantity + 1, MAX_QUANTITY))}
                         disabled={quantity >= MAX_QUANTITY}
-                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-lg font-bold hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                        aria-label="수량 늘리기"
                       >
                         +
                       </button>
@@ -350,17 +357,18 @@ export default function ProductDetailPage() {
                     className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-lg transition-colors ${
                       added
                         ? "bg-green-500 text-white"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
                     }`}
+                    aria-label={`${product.name} 장바구니에 담기`}
                   >
                     {added ? (
                       <>
-                        <Check className="w-5 h-5" />
-                        장바구니에 담았습니다!
+                        <Check className="w-5 h-5" aria-hidden="true" />
+                        <span aria-live="polite">장바구니에 담았습니다!</span>
                       </>
                     ) : (
                       <>
-                        <ShoppingCart className="w-5 h-5" />
+                        <ShoppingCart className="w-5 h-5" aria-hidden="true" />
                         장바구니 담기
                       </>
                     )}

@@ -32,25 +32,25 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav aria-label="메인 내비게이션" className="hidden md:flex items-center gap-8">
             <Link
               href="/products"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="text-gray-700 hover:text-blue-600 focus-visible:text-blue-600 font-medium transition-colors"
             >
               마케팅 상품
             </Link>
             {hydrated && admin && (
               <Link
                 href="/admin"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                className="text-gray-700 hover:text-blue-600 focus-visible:text-blue-600 font-medium transition-colors"
               >
                 관리자
               </Link>
             )}
-            <Link href="/cart" className="relative p-2">
-              <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-600 transition-colors" />
+            <Link href="/cart" className="relative p-2" aria-label={`장바구니${hydrated && totalItems > 0 ? `, ${totalItems}개 상품` : ""}`}>
+              <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-600 transition-colors" aria-hidden="true" />
               {hydrated && totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold" aria-hidden="true">
                   {totalItems}
                 </span>
               )}
@@ -60,14 +60,14 @@ export default function Header() {
               currentUser ? (
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-600 flex items-center gap-1">
-                    <User className="w-4 h-4" />
+                    <User className="w-4 h-4" aria-hidden="true" />
                     {currentUser.name}
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors"
+                    className="text-sm text-gray-500 hover:text-red-500 focus-visible:text-red-500 flex items-center gap-1 transition-colors"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-4 h-4" aria-hidden="true" />
                     로그아웃
                   </button>
                 </div>
@@ -75,13 +75,13 @@ export default function Header() {
                 <div className="flex items-center gap-3">
                   <Link
                     href="/login"
-                    className="text-sm text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                    className="text-sm text-gray-700 hover:text-blue-600 focus-visible:text-blue-600 font-medium transition-colors"
                   >
                     로그인
                   </Link>
                   <Link
                     href="/register"
-                    className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors"
                   >
                     회원가입
                   </Link>
@@ -94,81 +94,89 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-4 md:hidden">
-            <Link href="/cart" className="relative p-2">
-              <ShoppingCart className="w-6 h-6 text-gray-700" />
+            <Link href="/cart" className="relative p-2" aria-label={`장바구니${hydrated && totalItems > 0 ? `, ${totalItems}개 상품` : ""}`}>
+              <ShoppingCart className="w-6 h-6 text-gray-700" aria-hidden="true" />
               {hydrated && totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold" aria-hidden="true">
                   {totalItems}
                 </span>
               )}
             </Link>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2"
+              aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+            >
               {menuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-6 h-6" aria-hidden="true" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6" aria-hidden="true" />
               )}
             </button>
           </div>
         </div>
 
         {/* Mobile Nav */}
-        {menuOpen && (
-          <nav className="md:hidden pb-4 space-y-2">
+        <nav
+          id="mobile-nav"
+          aria-label="모바일 내비게이션"
+          className={`md:hidden pb-4 space-y-2 ${menuOpen ? "" : "hidden"}`}
+        >
+          <Link
+            href="/products"
+            onClick={() => setMenuOpen(false)}
+            className="block py-2 text-gray-700 hover:text-blue-600 focus-visible:text-blue-600 font-medium"
+          >
+            마케팅 상품
+          </Link>
+          {hydrated && admin && (
             <Link
-              href="/products"
+              href="/admin"
               onClick={() => setMenuOpen(false)}
-              className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
+              className="block py-2 text-gray-700 hover:text-blue-600 focus-visible:text-blue-600 font-medium"
             >
-              마케팅 상품
+              관리자
             </Link>
-            {hydrated && admin && (
-              <Link
-                href="/admin"
-                onClick={() => setMenuOpen(false)}
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-              >
-                관리자
-              </Link>
+          )}
+          <div className="pt-2 border-t border-gray-100">
+            {hydrated && currentUser ? (
+              <>
+                <div className="py-2 text-sm text-gray-600 flex items-center gap-1">
+                  <User className="w-4 h-4" aria-hidden="true" />
+                  {currentUser.name}님
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMenuOpen(false);
+                  }}
+                  className="block py-2 text-red-500 font-medium"
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
+                >
+                  로그인
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="block py-2 text-blue-600 font-medium"
+                >
+                  회원가입
+                </Link>
+              </>
             )}
-            <div className="pt-2 border-t border-gray-100">
-              {hydrated && currentUser ? (
-                <>
-                  <div className="py-2 text-sm text-gray-600 flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    {currentUser.name}님
-                  </div>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setMenuOpen(false);
-                    }}
-                    className="block py-2 text-red-500 font-medium"
-                  >
-                    로그아웃
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setMenuOpen(false)}
-                    className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                  >
-                    로그인
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setMenuOpen(false)}
-                    className="block py-2 text-blue-600 font-medium"
-                  >
-                    회원가입
-                  </Link>
-                </>
-              )}
-            </div>
-          </nav>
-        )}
+          </div>
+        </nav>
       </div>
     </header>
   );

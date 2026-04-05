@@ -37,10 +37,11 @@ export default function ProductsPage() {
       </p>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-8" role="group" aria-label="카테고리 필터">
         <button
           onClick={() => setSelectedCategory("all")}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+          aria-pressed={selectedCategory === "all"}
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 ${
             selectedCategory === "all"
               ? "bg-blue-600 text-white"
               : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
@@ -52,7 +53,8 @@ export default function ProductsPage() {
           <button
             key={cat.key}
             onClick={() => setSelectedCategory(cat.key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            aria-pressed={selectedCategory === cat.key}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 ${
               selectedCategory === cat.key
                 ? "bg-blue-600 text-white"
                 : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"

@@ -22,9 +22,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+      <article className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg focus-within:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Image Placeholder */}
-        <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center" aria-hidden="true">
           <span className="text-4xl">
             {product.category === "sns" && "📱"}
             {product.category === "blog" && "📝"}
@@ -39,7 +39,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="inline-block text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
             {categoryLabel}
           </span>
-          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 group-focus-visible:text-blue-600 transition-colors">
             {product.name}
           </h3>
           <p className="text-sm text-gray-500 mb-4 line-clamp-2">
@@ -51,14 +51,15 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
             <button
               onClick={handleAddToCart}
-              className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 active:bg-blue-800 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors cursor-pointer"
+              aria-label={`${product.name} 장바구니에 담기`}
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-4 h-4" aria-hidden="true" />
               담기
             </button>
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
