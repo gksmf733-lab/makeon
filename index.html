@@ -21,6 +21,9 @@
   .topbar .wrap{display:flex;justify-content:flex-end;gap:18px;height:38px;align-items:center}
   .topbar a{cursor:pointer}
   .topbar a:hover{color:var(--gold-2)}
+  #authLinks{display:inline-flex;align-items:center;gap:14px}
+  #authLinks #signupLink{position:relative;padding-left:15px}
+  #authLinks #signupLink::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:12px;background:var(--text-dim);opacity:.45}
   .topbar .admin-btn{color:var(--gold);font-weight:700}
 
   header{background:var(--navy);color:var(--text);position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line)}
