@@ -1,0 +1,113 @@
+{
+  "store": "MAAKEON",
+  "version": "2026.05",
+  "categories": [
+    {
+      "id": "store",
+      "name": "스토어",
+      "slug": "store",
+      "icon": "🛍️",
+      "children": [
+        { "id": "store-general", "name": "스토어", "slug": "store-general" },
+        { "id": "store-review", "name": "SNS 체험단", "slug": "review-group" },
+        { "id": "store-live", "name": "쇼핑라이브│라이브커머스", "slug": "live-commerce" },
+        { "id": "store-funding", "name": "크라우드펀딩", "slug": "crowdfunding" }
+      ]
+    },
+    {
+      "id": "place",
+      "name": "플레이스│지도",
+      "slug": "place-map",
+      "icon": "📍",
+      "children": [
+        { "id": "place-naver", "name": "플레이스", "slug": "naver-place" },
+        { "id": "place-map", "name": "구글맵│카카오맵", "slug": "google-kakao-map" },
+        { "id": "place-daangn", "name": "당근마켓", "slug": "daangn" },
+        { "id": "place-hotel", "name": "호텔│숙박│숙소", "slug": "hotel-stay" },
+        { "id": "place-food", "name": "맛집마케팅", "slug": "food-marketing" },
+        { "id": "place-navi", "name": "내비게이션", "slug": "navigation" },
+        { "id": "place-beauty", "name": "화장품│병원│성형", "slug": "beauty-clinic" },
+        { "id": "place-skin", "name": "피부관리│마사지", "slug": "skincare-massage" },
+        { "id": "place-space", "name": "공간 대여", "slug": "space-rental" }
+      ]
+    },
+    {
+      "id": "app",
+      "name": "앱│어플",
+      "slug": "app",
+      "icon": "📱",
+      "children": [
+        { "id": "app-aos", "name": "구글플레이│AOS", "slug": "google-play" },
+        { "id": "app-ios", "name": "앱스토어│IOS", "slug": "app-store" },
+        { "id": "app-one", "name": "원스토어", "slug": "one-store" },
+        { "id": "app-cloud", "name": "클라우드서버", "slug": "cloud-server" }
+      ]
+    },
+    {
+      "id": "seo",
+      "name": "SEO│검색최적화",
+      "slug": "seo",
+      "icon": "🔍",
+      "children": [
+        { "id": "seo-traffic", "name": "트래픽", "slug": "traffic" },
+        { "id": "seo-reward", "name": "리워드 트래픽", "slug": "reward-traffic" },
+        { "id": "seo-backlink", "name": "백링크", "slug": "backlink" }
+      ]
+    },
+    {
+      "id": "cpc",
+      "name": "CPC검색광고│운영대행",
+      "slug": "cpc-ads",
+      "icon": "📈",
+      "children": [
+        { "id": "cpc-place", "name": "플레이스 광고", "slug": "place-ad" },
+        { "id": "cpc-powerlink", "name": "파워링크", "slug": "power-link" },
+        { "id": "cpc-shopping", "name": "쇼핑검색광고", "slug": "shopping-ad" }
+      ]
+    },
+    {
+      "id": "sns",
+      "name": "SNS 채널",
+      "slug": "sns",
+      "icon": "💬",
+      "children": [
+        { "id": "sns-insta", "name": "인스타│페이스북 등", "slug": "instagram-facebook" },
+        { "id": "sns-kakao", "name": "카카오 플랫폼", "slug": "kakao" },
+        { "id": "sns-naver", "name": "네이버 플랫폼", "slug": "naver" },
+        { "id": "sns-messenger", "name": "메신저│오픈톡", "slug": "messenger-opentalk" },
+        { "id": "sns-music", "name": "음원 플랫폼", "slug": "music-platform" }
+      ]
+    },
+    {
+      "id": "tv",
+      "name": "TV 채널",
+      "slug": "tv",
+      "icon": "📺",
+      "children": []
+    },
+    {
+      "id": "cafe",
+      "name": "카페│커뮤니티",
+      "slug": "cafe-community",
+      "icon": "✍️",
+      "children": [
+        { "id": "cafe-blog", "name": "블로그", "slug": "blog" },
+        { "id": "cafe-cafe", "name": "카페", "slug": "cafe" },
+        { "id": "cafe-community", "name": "커뮤니티", "slug": "community" },
+        { "id": "cafe-kin", "name": "지식인│질문 Q&A", "slug": "kin-qna" },
+        { "id": "cafe-news", "name": "언론, 기자, 뉴스 구독", "slug": "news-press" }
+      ]
+    },
+    {
+      "id": "etc",
+      "name": "기타│플랫폼",
+      "slug": "etc",
+      "icon": "🎬",
+      "children": [
+        { "id": "etc-webtoon", "name": "웹툰│웹소설", "slug": "webtoon-novel" },
+        { "id": "etc-culture", "name": "영화│뮤지컬│연극", "slug": "movie-musical" },
+        { "id": "etc-others", "name": "기타", "slug": "others" }
+      ]
+    }
+  ]
+}

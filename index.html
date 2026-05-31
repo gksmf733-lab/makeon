@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마케온 MAAKEON | 온라인 마케팅 쇼핑몰</title>
+<style>
+  :root{
+    --navy:#10182e; --navy-2:#0a0f20; --navy-card:#161f3a;
+    --gold:#c8a04e; --gold-2:#e0bf78; --line:#26304f;
+    --text:#e8ecf5; --text-dim:#9aa4bd; --bg:#f5f6f9; --white:#fff; --ok:#3ec18f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:#1c2333;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  .hidden{display:none!important}
+
+  .topbar{background:var(--navy-2);color:var(--text-dim);font-size:12.5px}
+  .topbar .wrap{display:flex;justify-content:flex-end;gap:18px;height:38px;align-items:center}
+  .topbar a{cursor:pointer}
+  .topbar a:hover{color:var(--gold-2)}
+  .topbar .admin-btn{color:var(--gold);font-weight:700}
+
+  header{background:var(--navy);color:var(--text);position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line)}
+  .head-main{display:flex;align-items:center;gap:28px;height:72px}
+  .logo{font-size:24px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px;cursor:pointer}
+  .logo .mark{color:var(--gold)}
+  .logo small{font-size:11px;color:var(--text-dim);font-weight:500;letter-spacing:3px;margin-top:6px}
+  .search{flex:1;max-width:460px;margin-left:auto;display:flex;background:var(--navy-card);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .search input{flex:1;background:transparent;border:0;color:var(--text);padding:11px 18px;font-size:14px;outline:none}
+  .search input::placeholder{color:var(--text-dim)}
+  .search button{background:transparent;border:0;color:var(--gold);padding:0 16px;cursor:pointer;font-size:15px}
+  .head-icons{display:flex;gap:18px;font-size:13px;color:var(--text-dim)}
+  .head-icons a{cursor:pointer}
+  .head-icons a:hover{color:var(--gold-2)}
+
+  nav{background:var(--navy);border-top:1px solid var(--line)}
+  .nav-list{display:flex;gap:2px;position:relative}
+  .nav-item{position:relative}
+  .nav-item>a{display:block;padding:15px 16px;font-size:14px;font-weight:600;color:var(--text);transition:color .2s;white-space:nowrap;cursor:pointer}
+  .nav-item:hover>a{color:var(--gold-2)}
+  .nav-item>a::after{content:"";position:absolute;left:16px;right:16px;bottom:8px;height:2px;background:var(--gold);transform:scaleX(0);transition:transform .25s}
+  .nav-item:hover>a::after{transform:scaleX(1)}
+  .submenu{position:absolute;top:100%;left:0;background:var(--navy-card);border:1px solid var(--line);border-radius:0 0 10px 10px;min-width:220px;padding:8px 0;opacity:0;visibility:hidden;transform:translateY(6px);transition:.2s;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+  .nav-item:hover .submenu{opacity:1;visibility:visible;transform:translateY(0)}
+  .submenu a{display:block;padding:9px 22px;font-size:13.5px;color:var(--text-dim);transition:.15s;cursor:pointer}
+  .submenu a:hover{background:rgba(200,160,78,.1);color:var(--gold-2);padding-left:26px}
+
+  /* ===== LIST VIEW ===== */
+  /* HERO SLIDER */
+  .hero-slider{position:relative;overflow:hidden;background:var(--navy-2)}
+  .hero-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+  .hero-slide{flex:0 0 100%;height:300px;position:relative;display:flex;align-items:center;background-size:cover;background-position:center;cursor:pointer}
+  .hero-slide .hs-inner{max-width:1180px;margin:0 auto;padding:0 20px;width:100%;position:relative;z-index:2}
+  .hero-slide .hs-eyebrow{color:var(--gold-2);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+  .hero-slide .hs-title{color:#fff;font-size:30px;font-weight:800;margin-top:10px;letter-spacing:-.7px;line-height:1.25;max-width:560px}
+  .hero-slide .hs-desc{color:var(--text-dim);font-size:14.5px;margin-top:10px;max-width:520px}
+  .hero-slide .hs-cta{display:inline-block;margin-top:20px;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304;padding:12px 26px;border-radius:10px;font-weight:700;font-size:14px}
+  /* 이미지 없을 때 그라데이션 오버레이, 있을 때 어둡게 깔기 */
+  .hero-slide::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);z-index:0}
+  .hero-slide.has-img::before{background:linear-gradient(90deg,rgba(10,15,32,.82) 0%,rgba(10,15,32,.45) 55%,rgba(10,15,32,.2) 100%)}
+  .hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;backdrop-filter:blur(4px)}
+  .hero-arrow:hover{background:var(--gold);color:#1c1304}
+  .hero-arrow.prev{left:20px}.hero-arrow.next{right:20px}
+  .hero-dots{position:absolute;bottom:18px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:8px}
+  .hero-dots button{width:9px;height:9px;border-radius:50%;border:0;background:rgba(255,255,255,.4);cursor:pointer;transition:.2s;padding:0}
+  .hero-dots button.on{background:var(--gold);width:26px;border-radius:5px}
+  @media(max-width:560px){
+    .hero-slide{height:230px}
+    .hero-slide .hs-title{font-size:21px}
+    .hero-slide .hs-desc{font-size:13px}
+    .hero-arrow{width:36px;height:36px;font-size:20px}
+    .hero-arrow.prev{left:10px}.hero-arrow.next{right:10px}
+  }
+
+  .layout{display:grid;grid-template-columns:230px 1fr;gap:30px;padding:34px 0 60px}
+  .side h3{font-size:14px;font-weight:800;color:#141a2a;padding:0 6px 12px;border-bottom:2px solid var(--navy);margin-bottom:6px}
+  .cat-group{margin-bottom:4px}
+  .cat-group>a{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;font-size:14px;font-weight:700;color:#2a3145;border-radius:9px;cursor:pointer;transition:.15s;gap:8px}
+  .cat-group>a .nm{display:flex;align-items:center;gap:8px}
+  .cat-group>a:hover{background:#eef0f5;color:var(--navy)}
+  .cat-group>a .arr{color:#b3bacb;font-size:11px;transition:.2s}
+  .cat-group.open>a{background:var(--navy);color:#fff}
+  .cat-group.open>a .arr{color:var(--gold-2);transform:rotate(90deg)}
+  .cat-sub{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .cat-group.open .cat-sub{max-height:500px}
+  .cat-sub a{display:flex;justify-content:space-between;padding:8px 12px 8px 34px;font-size:13px;color:#6b7388;border-radius:8px;transition:.15s;cursor:pointer}
+  .cat-sub a:hover,.cat-sub a.on{color:var(--gold);background:#f7f8fb}
+  .cat-sub a .cnt{font-size:11px;color:#b3bacb}
+
+  .crumb{font-size:12.5px;color:#8a93a8;margin-bottom:14px}
+  .crumb span{margin:0 6px;opacity:.5}
+  .crumb a{cursor:pointer}
+  .crumb a:hover{color:var(--gold)}
+  .area-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+  .area-head h2{font-size:20px;font-weight:800;color:#141a2a;display:flex;align-items:center;gap:9px}
+  .area-head h2::before{content:"";width:5px;height:20px;background:var(--gold);border-radius:3px}
+  .sort{display:flex;gap:14px;font-size:13px;color:#8a93a8}
+  .sort a{cursor:pointer}.sort a.on{color:var(--navy);font-weight:700}.sort a:hover{color:var(--navy)}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:#fff;border:1px solid #e9ebf1;border-radius:14px;overflow:hidden;transition:.25s;display:flex;flex-direction:column;position:relative;cursor:pointer}
+  .card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(16,24,46,.1);border-color:var(--gold)}
+  .card .thumb{aspect-ratio:4/3;background:linear-gradient(135deg,var(--navy),var(--navy-card));display:flex;align-items:center;justify-content:center;color:var(--gold-2);font-size:13px;font-weight:700;text-align:center;padding:20px;line-height:1.5}
+  .card .bdg{position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304;font-size:11px;font-weight:800;padding:4px 10px;border-radius:5px;letter-spacing:.5px}
+  .like-btn{position:absolute;top:10px;right:10px;z-index:3;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#c0392b;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .like-btn:hover{transform:scale(1.12)}
+  .like-btn.on{background:#c0392b;color:#fff}
+  .card .meta{padding:16px;flex:1;display:flex;flex-direction:column}
+  .card .tag{font-size:11px;color:#9aa3b7;background:#f1f3f8;padding:3px 9px;border-radius:5px;align-self:flex-start;margin-bottom:10px}
+  .card .nm{font-size:14px;font-weight:700;color:#141a2a;line-height:1.45;height:40px;overflow:hidden}
+  .card .dsc{font-size:12px;color:#8089a0;margin-top:8px;height:36px;overflow:hidden;line-height:1.5}
+  .card .pr{font-size:18px;font-weight:800;color:#141a2a;margin-top:12px}
+  .card .pr small{font-size:12px;color:#8a93a8;font-weight:600}
+  .card .rt{font-size:12px;color:#8a93a8;margin-top:4px}
+  .card .rt b{color:var(--gold)}
+  .card .admin-tools{display:none;gap:6px;margin-top:12px}
+  body.admin .card .admin-tools{display:flex}
+  .card .admin-tools button{flex:1;padding:7px 0;border:1px solid #d8dbe6;border-radius:7px;background:#fff;font-size:12px;font-weight:700;cursor:pointer}
+  .card .admin-tools .ed:hover{border-color:var(--navy);color:var(--navy)}
+  .card .admin-tools .del{color:#c0392b}
+  .card .admin-tools .del:hover{border-color:#c0392b;background:#fdf0ee}
+
+  .add-slot{background:#fff;border:1.5px dashed #c6cdde;border-radius:14px;min-height:300px;display:none;flex-direction:column;align-items:center;justify-content:center;color:#8a93a8;gap:10px;cursor:pointer;transition:.2s}
+  body.admin .add-slot{display:flex}
+  .add-slot:hover{border-color:var(--gold);color:var(--gold);background:#fffdf8}
+  .add-slot .plus{width:48px;height:48px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:26px}
+  .add-slot .lbl{font-size:13.5px;font-weight:700}
+  .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#9aa3b7;background:#fff;border:1.5px dashed #d3d8e4;border-radius:14px}
+  .empty .ic{font-size:40px;opacity:.4;margin-bottom:10px}.empty .t{font-size:15px;font-weight:700;color:#7c849a}
+
+  .admin-bar{display:none;background:rgba(200,160,78,.12);border:1px solid var(--gold);border-radius:12px;padding:14px 20px;margin-bottom:20px;align-items:center;gap:14px;font-size:13.5px;color:#7a5e1f}
+  body.admin .admin-bar{display:flex}
+  .admin-bar b{color:#5e470f}.admin-bar .sp{flex:1}
+  .admin-bar button{padding:8px 16px;border:1px solid var(--gold);border-radius:8px;background:#fff;color:#7a5e1f;font-size:12.5px;font-weight:700;cursor:pointer}
+  .admin-bar button:hover{background:var(--gold);color:#1c1304}
+
+  /* ===== DETAIL VIEW ===== */
+  #detailView{padding-bottom:0}
+  .d-crumb{padding:18px 0 4px;font-size:12.5px;color:#8a93a8}
+  .d-crumb a{cursor:pointer}.d-crumb a:hover{color:var(--gold)}.d-crumb span{margin:0 7px;opacity:.5}
+  .product{display:grid;grid-template-columns:1fr 1fr;gap:44px;padding:14px 0 50px}
+  .gallery{position:relative}
+  .gallery .badge-rank{position:absolute;top:16px;left:16px;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304;font-size:12px;font-weight:800;padding:6px 14px;border-radius:6px;letter-spacing:.5px;z-index:2;box-shadow:0 6px 18px rgba(200,160,78,.4)}
+  .gallery .main-img{border-radius:16px;overflow:hidden;background:var(--navy);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+  .gallery .main-img .ph{text-align:center;color:var(--text);padding:40px}
+  .gallery .main-img .ph .big{font-size:30px;font-weight:800;line-height:1.3;letter-spacing:-.5px}
+  .gallery .main-img .ph .big em{color:var(--gold-2);font-style:normal}
+  .gallery .main-img .ph .sub{margin-top:14px;font-size:14px;color:var(--text-dim);font-weight:500}
+  .thumbs{display:flex;gap:10px;margin-top:12px}
+  .thumbs .t{flex:1;aspect-ratio:1/1;background:var(--navy-card);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px;cursor:pointer;transition:.2s}
+  .thumbs .t:hover,.thumbs .t.on{border-color:var(--gold);color:var(--gold-2)}
+
+  .info .cat-tags{display:flex;gap:8px;margin-bottom:14px}
+  .info .cat-tags a{font-size:12px;background:#eef0f5;color:#5b6377;padding:4px 11px;border-radius:5px;cursor:pointer}
+  .info h1{font-size:25px;font-weight:800;line-height:1.35;letter-spacing:-.7px;color:#141a2a}
+  .rating{display:flex;align-items:center;gap:14px;margin:16px 0 4px;font-size:14px}
+  .stars{color:var(--gold);letter-spacing:2px;font-size:16px}
+  .rating .score{font-weight:800;color:#141a2a}.rating .count{color:#8a93a8}
+  .rating .like{margin-left:auto;color:#8a93a8;font-size:13px}
+  .rating .like.liked{color:#c0392b;font-weight:700}
+  .pricebox{background:#fff;border:1px solid #e6e8ef;border-radius:14px;padding:22px;margin-top:18px}
+  .instant{display:inline-flex;align-items:center;gap:6px;background:rgba(62,193,143,.12);color:#1f9c6e;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:6px;margin-bottom:14px}
+  .instant .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(62,193,143,.25)}
+  .pdesc{font-size:13.5px;color:#5b6377;background:#f7f8fb;border-radius:9px;padding:14px 16px;margin-bottom:18px;line-height:1.6}
+  .opt-wrap{margin-bottom:18px}
+  .opt-label{font-size:13px;font-weight:700;color:#3a4257;margin-bottom:7px}
+  #dOpt{width:100%;padding:13px 14px;border:1px solid #d8dbe6;border-radius:9px;font-size:14px;color:#2a3145;background:#fff;cursor:pointer;appearance:none;font-family:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+  #dOpt:focus{border-color:var(--gold);outline:none}
+  .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-top:1px dashed #e0e3ec}
+  .total .lbl{font-size:14px;color:#5b6377}
+  .total .amt{font-size:30px;font-weight:800;color:#141a2a}
+  .total .amt small{font-size:14px;color:#8a93a8;font-weight:600}
+  .btns{display:flex;gap:10px;margin-top:14px}
+  .btns button{flex:1;padding:16px 0;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}
+  .btn-cart{background:#fff;border:1.5px solid var(--navy)!important;color:var(--navy)}
+  .btn-cart:hover{background:var(--navy);color:#fff}
+  .btn-buy{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304}
+  .btn-buy:hover{filter:brightness(1.07);box-shadow:0 8px 22px rgba(200,160,78,.4)}
+  .trust{display:flex;gap:8px;margin-top:16px}
+  .trust .badge{flex:1;text-align:center;background:#f7f8fb;border-radius:10px;padding:13px 8px}
+  .trust .badge b{display:block;color:var(--navy);font-size:13.5px}
+  .trust .badge span{font-size:11.5px;color:#8a93a8}
+
+  .dtabs{border-top:1px solid #e6e8ef;border-bottom:1px solid #e6e8ef;background:#fff;margin-top:10px}
+  .dtabs .wrap{display:flex}
+  .dtabs a{padding:17px 26px;font-size:15px;font-weight:700;color:#7c849a;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+  .dtabs a.on{color:var(--navy);border-bottom-color:var(--gold)}
+
+  section.block{padding:48px 0;border-bottom:1px solid #ebedf3}
+  .sec-tit{font-size:21px;font-weight:800;color:#141a2a;margin-bottom:8px;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}
+  .sec-tit::before{content:"";width:5px;height:21px;background:var(--gold);border-radius:3px}
+  .sec-sub{color:#7c849a;font-size:14px;margin-bottom:28px}
+  .feat-banner{background:linear-gradient(135deg,var(--navy),var(--navy-2));border-radius:18px;padding:48px 40px;text-align:center;color:#fff;margin-bottom:32px}
+  .feat-banner .eyebrow{color:var(--gold-2);font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+  .feat-banner h2{font-size:27px;font-weight:800;margin:14px 0 12px;letter-spacing:-.8px}
+  .feat-banner p{color:var(--text-dim);font-size:15px;max-width:560px;margin:0 auto}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .feat-card{background:#fff;border:1px solid #e9ebf1;border-radius:14px;padding:26px 22px;transition:.25s}
+  .feat-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 14px 30px rgba(16,24,46,.08)}
+  .feat-card .ic{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy-card));color:var(--gold-2);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+  .feat-card h3{font-size:16px;font-weight:800;color:#141a2a;margin-bottom:8px}
+  .feat-card p{font-size:13px;color:#6b7388;line-height:1.6}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .step{background:#fff;border:1px solid #e9ebf1;border-radius:14px;padding:24px 20px;position:relative}
+  .step .num{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:8px}
+  .step .t{font-size:15px;font-weight:800;color:#141a2a;margin-bottom:6px}
+  .step p{font-size:12.5px;color:#6b7388}
+  ol.notes{list-style:none;counter-reset:n}
+  ol.notes li{counter-increment:n;position:relative;padding:15px 18px 15px 50px;background:#fff;border:1px solid #ebedf3;border-radius:12px;margin-bottom:10px;font-size:14px;color:#414a60;line-height:1.6}
+  ol.notes li::before{content:counter(n);position:absolute;left:16px;top:15px;width:24px;height:24px;background:var(--navy);color:var(--gold-2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700}
+  .rev-head{display:flex;align-items:center;gap:30px;background:#fff;border:1px solid #e9ebf1;border-radius:16px;padding:26px 32px;margin-bottom:24px}
+  .rev-head .big-score{font-size:48px;font-weight:800;color:#141a2a;line-height:1}
+  .rev-head .big-stars{color:var(--gold);font-size:18px;letter-spacing:3px}
+  .rev-head .big-meta{color:#8a93a8;font-size:13px;margin-top:4px}
+  .review{background:#fff;border:1px solid #ebedf3;border-radius:14px;padding:20px 22px;margin-bottom:12px}
+  .review .top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .review .rstars{color:var(--gold);font-size:14px;letter-spacing:1px}
+  .review .date{color:#aab2c5;font-size:12.5px;margin-left:auto}
+  .review .body{font-size:14px;color:#2a3145;font-weight:600;margin-bottom:6px}
+  .review .who{font-size:12.5px;color:#8a93a8}
+
+  .sim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+
+  footer{background:var(--navy-2);color:var(--text-dim);padding:50px 0 36px}
+  .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:34px;border-bottom:1px solid var(--line)}
+  .foot-cs h4{color:#fff;margin-bottom:10px;font-size:14px}
+  .foot-cs .num{font-size:30px;font-weight:800;color:var(--gold-2)}
+  .foot-cs .hrs{font-size:13px;margin-top:8px;line-height:1.7}
+  .foot-col h4{color:var(--text);font-size:14px;font-weight:700;margin-bottom:14px}
+  .foot-col a{display:block;font-size:13px;padding:4px 0;cursor:pointer}
+  .foot-col a:hover{color:var(--gold-2)}
+  .foot-biz{padding-top:26px;font-size:12px;line-height:1.9;color:#69728c}
+  .foot-biz .logo{font-size:18px;font-weight:800;color:var(--text);margin-bottom:12px}
+  .foot-biz span{margin-right:18px}.foot-biz b{color:#8893ad}
+
+  .float{position:fixed;right:22px;bottom:26px;display:flex;flex-direction:column;gap:10px;z-index:60}
+  .float a{width:56px;height:56px;border-radius:16px;background:var(--navy);color:var(--gold-2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;gap:3px;box-shadow:0 8px 22px rgba(16,24,46,.3);border:1px solid var(--line);transition:.2s;cursor:pointer}
+  .float a:hover{background:var(--gold);color:#1c1304;transform:translateY(-2px)}
+  .float a .em{font-size:19px}
+  .float a.kakao{background:#fee500;color:#3a1d1d;border-color:#fee500}
+
+  /* NOTICE BAR */
+  .notice-bar{display:flex;align-items:center;gap:12px;margin:20px 0 0;padding:13px 18px;background:#fff;border:1px solid #e9ebf1;border-radius:12px;cursor:pointer;transition:.2s}
+  .notice-bar:hover{border-color:var(--gold)}
+  .notice-bar .tag{background:var(--navy);color:var(--gold-2);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:6px;flex-shrink:0}
+  .notice-bar .msg{font-size:13.5px;color:#3a4257;flex:1;font-weight:600}
+  .notice-bar .more{font-size:12.5px;color:#8a93a8}
+  @media(max-width:560px){.notice-bar .more{display:none}}
+
+  /* CART PANEL */
+  .cart-overlay{position:fixed;inset:0;background:rgba(10,15,32,.5);opacity:0;visibility:hidden;transition:.25s;z-index:90}
+  .cart-overlay.show{opacity:1;visibility:visible}
+  .cart-panel{position:fixed;top:0;right:0;height:100%;width:390px;max-width:90vw;background:#fff;z-index:95;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:-20px 0 50px rgba(0,0,0,.2)}
+  .cart-panel.show{transform:translateX(0)}
+  .cart-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;background:var(--navy);color:#fff}
+  .cart-head h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .cart-head #cartHeadCount{background:var(--gold);color:#1c1304;font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px;min-width:22px;text-align:center}
+  .cart-head .x{font-size:26px;cursor:pointer;color:var(--text-dim);line-height:1}
+  .cart-head .x:hover{color:#fff}
+  .cart-body{flex:1;overflow-y:auto;padding:16px 18px}
+  .cart-empty{text-align:center;color:#9aa3b7;padding:70px 20px}
+  .cart-empty .ic{font-size:44px;opacity:.35;margin-bottom:12px}
+  .cart-empty .t{font-size:14.5px;font-weight:600}
+  .citem{display:flex;gap:12px;padding:15px 0;border-bottom:1px solid #eef0f5}
+  .citem .ci-thumb{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--navy-card));flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--gold-2);font-size:18px}
+  .citem .ci-main{flex:1;min-width:0}
+  .citem .ci-name{font-size:13.5px;font-weight:700;color:#141a2a;line-height:1.4;margin-bottom:3px}
+  .citem .ci-opt{font-size:12px;color:#8089a0;margin-bottom:8px}
+  .citem .ci-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .qty{display:flex;align-items:center;border:1px solid #d8dbe6;border-radius:8px;overflow:hidden}
+  .qty button{width:26px;height:26px;border:0;background:#f7f8fb;color:#5b6377;font-size:15px;cursor:pointer;line-height:1}
+  .qty button:hover{background:var(--navy);color:#fff}
+  .qty span{min-width:30px;text-align:center;font-size:13px;font-weight:700;color:#2a3145}
+  .citem .ci-price{font-size:14px;font-weight:800;color:#141a2a}
+  .citem .ci-del{background:none;border:0;color:#c0392b;font-size:11.5px;cursor:pointer;padding:4px 0;margin-top:4px}
+  .citem .ci-del:hover{text-decoration:underline}
+  .cart-foot{border-top:1px solid #eef0f5;padding:20px 24px;background:#fbfbfd}
+  .mp-profile{background:linear-gradient(135deg,var(--navy),var(--navy-card));border-radius:14px;padding:20px;color:#fff;margin-bottom:20px}
+  .mp-profile .mp-name{font-size:19px;font-weight:800}
+  .mp-profile .mp-sub{font-size:13px;color:var(--gold-2);margin-bottom:14px}
+  .mp-row{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0;border-top:1px solid rgba(255,255,255,.08)}
+  .mp-row span{color:var(--text-dim)}.mp-row b{color:#fff;font-weight:600;text-align:right}
+  .mp-sec-tit{font-size:14px;font-weight:800;color:#141a2a;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .mp-sec-tit::before{content:"";width:4px;height:16px;background:var(--gold);border-radius:2px}
+  .mp-order{border:1px solid #ebedf3;border-radius:12px;padding:14px 16px;margin-bottom:10px}
+  .mp-order-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .mp-date{font-size:12px;color:#8a93a8}.mp-amt{font-size:15px;font-weight:800;color:#141a2a}
+  .mp-items{font-size:12.5px;color:#5b6377;line-height:1.6;margin-bottom:10px}
+  .mp-status{display:inline-block;background:rgba(62,193,143,.12);color:#1f9c6e;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:6px}
+  .cart-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .cart-total span{font-size:14px;color:#5b6377;font-weight:600}
+  .cart-total b{font-size:24px;font-weight:800;color:#141a2a}
+  .cart-note{font-size:11.5px;color:#9aa3b7;line-height:1.5;margin-bottom:14px}
+  .cart-submit{width:100%;padding:15px 0;border:0;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304;transition:.2s}
+  .cart-submit:hover{filter:brightness(1.06);box-shadow:0 8px 22px rgba(200,160,78,.4)}
+  .cart-submit:disabled{background:#e8eaf0;color:#aab2c5;cursor:not-allowed;box-shadow:none;filter:none}
+  @media(max-width:560px){.cart-panel{width:100%;max-width:100%}}
+
+  /* MODAL */
+  .modal-bg{position:fixed;inset:0;background:rgba(10,15,32,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-bg.show{display:flex}
+  .modal{background:#fff;border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+  .modal-head{padding:22px 26px;border-bottom:1px solid #eef0f5;display:flex;justify-content:space-between;align-items:center}
+  .modal-head h3{font-size:18px;font-weight:800;color:#141a2a}
+  .modal-head .x{font-size:24px;color:#aab2c5;cursor:pointer;line-height:1}
+  .modal-body{padding:22px 26px}
+  .fld{margin-bottom:16px}
+  .fld label{display:block;font-size:13px;font-weight:700;color:#3a4257;margin-bottom:6px}
+  .fld input,.fld select,.fld textarea{width:100%;padding:11px 13px;border:1px solid #d8dbe6;border-radius:9px;font-size:14px;color:#2a3145;outline:none;font-family:inherit}
+  .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--gold)}
+  .fld textarea{resize:vertical;min-height:64px}
+  .fld-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:20px}
+  .auth-tab{flex:1;padding:11px 0;border:1px solid #d8dbe6;border-radius:9px;background:#fff;font-size:14px;font-weight:700;color:#8a93a8;cursor:pointer;transition:.15s}
+  .auth-tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .auth-note{font-size:11.5px;color:#9aa3b7;line-height:1.5;margin-top:16px;background:#f7f8fb;border-radius:8px;padding:11px 13px}
+  .req{color:#c0392b;font-style:normal}
+  .file-drop{display:flex;align-items:center;gap:10px;padding:13px 14px;border:1.5px dashed #d3d8e4;border-radius:9px;cursor:pointer;transition:.15s;color:#8a93a8;font-size:13px}
+  .file-drop:hover{border-color:var(--gold);background:#fffdf8;color:var(--gold)}
+  .file-drop .fd-ic{font-size:17px}
+  .file-drop.has-file{border-style:solid;border-color:var(--ok);color:#1f9c6e;background:#f2fbf7}
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative;cursor:pointer}
+  .chip input{position:absolute;opacity:0;width:0;height:0}
+  .chip span{display:inline-block;padding:8px 14px;border:1px solid #d8dbe6;border-radius:999px;font-size:13px;color:#5b6377;transition:.15s;background:#fff}
+  .chip:hover span{border-color:var(--gold);color:var(--navy)}
+  .chip input:checked+span{background:var(--navy);border-color:var(--navy);color:var(--gold-2);font-weight:700}
+  .opt-row{display:grid;grid-template-columns:1fr 90px 70px 30px;gap:8px;margin-bottom:8px;align-items:center}
+  .opt-row input{padding:9px 10px;border:1px solid #d8dbe6;border-radius:8px;font-size:13px;outline:none;font-family:inherit;width:100%}
+  .opt-row input:focus{border-color:var(--gold)}
+  .opt-row .rm{background:#fdf0ee;color:#c0392b;border:1px solid #f0d0cc;border-radius:8px;height:36px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .opt-row .rm:hover{background:#c0392b;color:#fff}
+  .modal-foot{padding:18px 26px;border-top:1px solid #eef0f5;display:flex;gap:10px}
+  .modal-foot button{flex:1;padding:13px 0;border:0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
+  .btn-cancel{background:#f1f3f8;color:#5b6377}
+  .btn-save{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1c1304}
+
+  @media(max-width:920px){
+    .layout{grid-template-columns:1fr}.side{order:2}
+    .nav-list,.search{display:none}
+    .grid{grid-template-columns:1fr 1fr}.sim-grid{grid-template-columns:1fr 1fr}
+    .foot-top{grid-template-columns:1fr;gap:26px}
+    .product{grid-template-columns:1fr;gap:26px}
+    .feat-grid,.steps{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){.grid,.sim-grid,.feat-grid,.steps{grid-template-columns:1fr}.fld-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <span id="authLinks"><a id="loginLink">로그인</a><a id="signupLink">회원가입</a></span>
+  <span id="userLinks" class="hidden"><a id="welcomeMsg" style="color:var(--gold-2)"></a><a id="logoutLink">로그아웃</a></span>
+  <a>고객센터</a><a id="topCart">장바구니</a>
+  <a class="admin-btn" id="adminToggle">⚙ 관리자 모드</a>
+</div></div>
+
+<header>
+  <div class="wrap head-main">
+    <div class="logo" id="homeBtn"><span class="mark">●</span>MAAKEON<small>마케온</small></div>
+    <div class="search"><input type="text" id="searchInput" placeholder="찾으시는 마케팅 서비스를 검색하세요"><button>🔍</button></div>
+    <div class="head-icons"><a id="wishLink">♥ 찜 <span id="wishCount"></span></a><a id="mypageLink" class="hidden">마이페이지</a><a id="cartLink">🛒 장바구니 <span id="cartCount"></span></a></div>
+  </div>
+  <nav><div class="wrap"><div class="nav-list" id="navList"></div></div></nav>
+</header>
+
+<!-- ============ LIST VIEW ============ -->
+<div id="listView">
+  <div class="hero-slider" id="heroSlider">
+    <div class="hero-track" id="heroTrack"></div>
+    <button class="hero-arrow prev" id="heroPrev" aria-label="이전">‹</button>
+    <button class="hero-arrow next" id="heroNext" aria-label="다음">›</button>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+
+  <div class="wrap"><a class="notice-bar" id="noticeBar"><span class="tag">공지</span><span class="msg">마케온 신규 회원 대상 플레이스 진단 무료 이벤트 진행 중입니다.</span><span class="more">자세히 ›</span></a></div>
+
+  <div class="wrap layout">
+    <aside class="side"><h3>전체 카테고리</h3><div id="sideCats"></div></aside>
+    <section>
+      <div class="crumb" id="crumb"></div>
+      <div class="area-head">
+        <h2 id="areaTitle"></h2>
+        <div class="sort" id="sortBar"><a class="on" data-sort="popular">인기순</a><a data-sort="low">낮은가격순</a><a data-sort="high">높은가격순</a><a data-sort="rating">평점순</a></div>
+      </div>
+      <div class="admin-bar">
+        <b>관리자 모드</b> · 상품 추가·수정·삭제 가능. 변경분은 내보내기로 저장하세요.
+        <span class="sp"></span>
+        <button id="exportBtn">products.json 내보내기</button>
+        <button id="resetBtn">초기화</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </div>
+</div>
+
+<!-- ============ DETAIL VIEW ============ -->
+<div id="detailView" class="hidden">
+  <div class="wrap">
+    <div class="d-crumb" id="dCrumb"></div>
+    <div class="product">
+      <div class="gallery">
+        <div class="badge-rank" id="dBadge"></div>
+        <div class="main-img"><div class="ph">
+          <div class="big" id="dGalleryTitle"></div>
+          <div class="sub" id="dGallerySub"></div>
+        </div></div>
+        <div class="thumbs" id="dThumbs"></div>
+      </div>
+      <div class="info">
+        <div class="cat-tags" id="dTags"></div>
+        <h1 id="dName"></h1>
+        <div class="rating">
+          <span class="stars">★★★★★</span>
+          <span class="score" id="dScore"></span>
+          <span class="count" id="dReviews"></span>
+          <span class="like" id="dLikeBtn" style="cursor:pointer"></span>
+        </div>
+        <div class="pricebox">
+          <div class="instant"><span class="dot"></span>전담 컨설턴트 1:1 배정</div>
+          <div class="pdesc" id="dDesc"></div>
+          <div id="dOptWrap" class="opt-wrap hidden">
+            <div class="opt-label">옵션 선택</div>
+            <select id="dOpt"></select>
+          </div>
+          <div class="total">
+            <span class="lbl">총 결제금액</span>
+            <span class="amt" id="dPrice"></span>
+          </div>
+          <div class="btns">
+            <button class="btn-cart" id="dCartBtn">장바구니</button>
+            <button class="btn-buy" id="dInquiryBtn">상담 신청하기</button>
+          </div>
+          <div class="trust">
+            <div class="badge"><b>100% 환불</b><span>작업 전 단순변심</span></div>
+            <div class="badge"><b>후불 협의</b><span>성과 기반 진행</span></div>
+            <div class="badge"><b>실유저 방식</b><span>어뷰징 없음</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dtabs"><div class="wrap">
+    <a class="on">서비스 설명</a><a>진행 가이드</a><a>주의 사항</a><a>후기</a>
+  </div></div>
+
+  <div class="wrap">
+    <section class="block">
+      <div class="feat-banner">
+        <div class="eyebrow">MAAKEON · SERVICE</div>
+        <h2 id="dFeatTitle"></h2>
+        <p id="dFeatDesc"></p>
+      </div>
+      <div class="sec-tit">왜 마케온인가</div>
+      <div class="sec-sub">단순 작업이 아니라, 매장이 스스로 노출되는 구조를 만듭니다</div>
+      <div class="feat-grid" id="dFeatGrid">
+        <div class="feat-card"><div class="ic">📍</div><h3>정밀 진단</h3><p>업종·상권·경쟁을 분석해 전환이 일어나는 핵심부터 공략합니다.</p></div>
+        <div class="feat-card"><div class="ic">👥</div><h3>안전한 방식</h3><p>어뷰징이 아닌 실제 사용자 기반으로 저품질 위험을 줄입니다.</p></div>
+        <div class="feat-card"><div class="ic">📊</div><h3>주간 리포트</h3><p>진행 현황과 성과를 매주 투명하게 공유합니다.</p></div>
+      </div>
+    </section>
+    <section class="block">
+      <div class="sec-tit">진행 가이드</div>
+      <div class="sec-sub">상담 신청부터 노출까지 4단계로 진행됩니다</div>
+      <div class="steps">
+        <div class="step"><div class="num">STEP 01</div><div class="t">상담·진단</div><p>매장 정보와 목표를 받아 현재 상태를 무료 진단합니다.</p></div>
+        <div class="step"><div class="num">STEP 02</div><div class="t">전략 설계</div><p>공략 범위와 일정을 제안서로 정리해 드립니다.</p></div>
+        <div class="step"><div class="num">STEP 03</div><div class="t">작업 진행</div><p>안전한 방식으로 진행하며 콘텐츠도 함께 보완합니다.</p></div>
+        <div class="step"><div class="num">STEP 04</div><div class="t">리포트·관리</div><p>주간 리포트를 공유하고 다음 전략을 조정합니다.</p></div>
+      </div>
+    </section>
+    <section class="block">
+      <div class="sec-tit">주의 사항</div>
+      <div class="sec-sub">원활한 진행을 위해 확인해 주세요</div>
+      <ol class="notes">
+        <li>업종·지역·경쟁 강도에 따라 소요 기간과 난이도가 달라질 수 있으며, 정확한 일정은 진단 후 안내드립니다.</li>
+        <li>실유저 방식으로 진행하므로 어뷰징성 급등 작업은 진행하지 않습니다.</li>
+        <li>네이버 정책 변경 등 외부 요인에 의한 변동은 책임 범위에서 제외되며, 대응 방안을 함께 논의합니다.</li>
+        <li>진행 현황은 통계 및 주간 리포트로 확인하실 수 있습니다.</li>
+      </ol>
+    </section>
+    <section class="block">
+      <div class="sec-tit">후기</div>
+      <div class="rev-head">
+        <div><div class="big-score" id="dRevScore"></div><div class="big-stars">★★★★★</div><div class="big-meta" id="dRevMeta"></div></div>
+        <div style="color:#8a93a8;font-size:13.5px;line-height:1.7">실제 진행 후기를 바탕으로 작성된 평가입니다.<br>매장별 상황에 따라 결과는 달라질 수 있습니다.</div>
+      </div>
+      <div id="dReviewList"></div>
+    </section>
+    <section class="block" style="border-bottom:0">
+      <div class="sec-tit">비슷한 서비스</div>
+      <div class="sec-sub" style="margin-bottom:24px">함께 진행하면 시너지가 나는 마케온 서비스</div>
+      <div class="grid sim-grid" id="dSimilar"></div>
+    </section>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <div class="foot-top">
+    <div class="foot-cs"><h4>고객센터</h4><div class="num">1600-0000</div><div class="hrs">운영시간 : 10:00 ~ 18:00 (평일)<br>점심시간 : 12:30 ~ 13:30<br>주말·공휴일 휴무</div></div>
+    <div class="foot-col"><h4>카테고리</h4><div id="footCats"></div></div>
+    <div class="foot-col"><h4>고객지원</h4><a>공지사항</a><a>자주 묻는 질문</a><a>1:1 문의</a><a>이용약관</a><a>개인정보처리방침</a></div>
+  </div>
+  <div class="foot-biz">
+    <div class="logo"><span style="color:var(--gold)">●</span> MAAKEON</div>
+    <span><b>회사명</b> 마케온</span><span><b>대표</b> 나꾸</span><span><b>소재지</b> 경기도 김포시</span><br>
+    <span><b>사업자등록번호</b> 000-00-00000</span><span><b>통신판매업신고</b> 제0000호</span><span><b>이메일</b> hello@maakeon.kr</span>
+    <div style="margin-top:16px;color:#4e576f">© 2026 MAAKEON. All rights reserved.</div>
+  </div>
+</div></footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-bg" id="authBg">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head"><h3 id="authTitle">로그인</h3><span class="x" id="authClose">×</span></div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab on" id="tabLogin">로그인</button>
+        <button class="auth-tab" id="tabSignup">회원가입</button>
+      </div>
+      <!-- 로그인 -->
+      <div id="loginForm">
+        <div class="fld"><label>아이디</label><input type="text" id="lg-id" placeholder="아이디"></div>
+        <div class="fld"><label>비밀번호</label><input type="password" id="lg-pw" placeholder="비밀번호"></div>
+      </div>
+      <!-- 회원가입 -->
+      <div id="signupForm" class="hidden">
+        <div class="fld"><label>아이디 <em class="req">*</em></label><input type="text" id="su-id" placeholder="영문·숫자 4자 이상"></div>
+        <div class="fld-row">
+          <div class="fld"><label>비밀번호 <em class="req">*</em></label><input type="password" id="su-pw" placeholder="6자 이상"></div>
+          <div class="fld"><label>비밀번호 확인 <em class="req">*</em></label><input type="password" id="su-pw2" placeholder="다시 입력"></div>
+        </div>
+        <div class="fld-row">
+          <div class="fld"><label>성명 <em class="req">*</em></label><input type="text" id="su-name" placeholder="홍길동"></div>
+          <div class="fld"><label>상호명 <em class="req">*</em></label><input type="text" id="su-company" placeholder="마케온"></div>
+        </div>
+        <div class="fld"><label>이메일 <em class="req">*</em></label><input type="text" id="su-email" placeholder="email@example.com"></div>
+        <div class="fld">
+          <label>사업자등록증 업로드</label>
+          <label class="file-drop" id="suFileLabel">
+            <input type="file" id="su-file" accept="image/*,.pdf" style="display:none">
+            <span class="fd-ic">📎</span><span class="fd-tx" id="suFileTx">파일을 선택하세요 (이미지·PDF)</span>
+          </label>
+        </div>
+        <div class="fld">
+          <label>관심 서비스 <span style="font-weight:500;color:#9aa3b7;font-size:11.5px">(운영 중인 서비스, 중복 선택 가능)</span></label>
+          <div class="chip-group" id="suInterest">
+            <label class="chip"><input type="checkbox" value="쇼핑"><span>쇼핑</span></label>
+            <label class="chip"><input type="checkbox" value="플레이스"><span>플레이스</span></label>
+            <label class="chip"><input type="checkbox" value="어플 CPA"><span>어플 CPA</span></label>
+            <label class="chip"><input type="checkbox" value="SEO·검색최적화"><span>SEO·검색최적화</span></label>
+            <label class="chip"><input type="checkbox" value="검색광고"><span>검색광고</span></label>
+            <label class="chip"><input type="checkbox" value="SNS"><span>SNS</span></label>
+            <label class="chip"><input type="checkbox" value="블로그·카페"><span>블로그·카페</span></label>
+            <label class="chip"><input type="checkbox" value="기타"><span>기타</span></label>
+          </div>
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#6b7388;line-height:1.5;cursor:pointer">
+          <input type="checkbox" id="su-agree" style="width:auto;margin-top:3px">
+          <span>이용약관 및 개인정보 수집·이용에 동의합니다.</span>
+        </label>
+      </div>
+      <div class="auth-note">⚠️ 데모용 화면입니다. 실제 인증 서버가 없어 입력 정보는 이 브라우저에만 임시 저장되며, 새로고침하면 사라집니다.</div>
+    </div>
+    <div class="modal-foot"><button class="btn-save" id="authSubmit" style="flex:1">로그인</button></div>
+  </div>
+</div>
+
+<!-- INQUIRY MODAL -->
+<div class="modal-bg" id="inqBg">
+  <div class="modal">
+    <div class="modal-head"><h3>문의하기</h3><span class="x" id="inqClose">×</span></div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:#7c849a;margin-bottom:18px">아래 정보를 입력하시면 담당 컨설턴트가 빠르게 상담을 도와드립니다.</div>
+      <div class="fld"><label>문의 분야</label><select id="inq-field"><option>플레이스</option><option>AEO·AI 최적화</option><option>블로그·콘텐츠</option><option>SNS</option><option>검색광고</option><option>국가지원사업</option><option>기타</option></select></div>
+      <div class="fld"><label>월 예산</label><select id="inq-budget"><option>50만원 이하</option><option>100만원 이하</option><option>300만원 이하</option><option>500만원 이하</option><option>상담 요망</option></select></div>
+      <div class="fld-row">
+        <div class="fld"><label>성함</label><input type="text" id="inq-name" placeholder="홍길동"></div>
+        <div class="fld"><label>연락처</label><input type="text" id="inq-phone" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="fld"><label>이메일 (선택)</label><input type="text" id="inq-email" placeholder="email@example.com"></div>
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#6b7388;line-height:1.5;cursor:pointer">
+        <input type="checkbox" id="inq-agree" style="width:auto;margin-top:3px">
+        <span>개인정보 수집·이용에 동의합니다. (수집항목: 성함·연락처·이메일 / 목적: 마케팅 상담 / 보유: 3년)</span>
+      </label>
+    </div>
+    <div class="modal-foot"><button class="btn-cancel" id="inqCancel">취소</button><button class="btn-save" id="inqSubmit">문의 보내기</button></div>
+  </div>
+</div>
+
+<!-- CART PANEL -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-panel" id="cartPanel">
+  <div class="cart-head">
+    <h3>🛒 장바구니 <span id="cartHeadCount">0</span></h3>
+    <span class="x" id="cartClose">×</span>
+  </div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-foot">
+    <div class="cart-total"><span>합계</span><b id="cartTotal">0원</b></div>
+    <div class="cart-note">선택하신 옵션 기준 예상 금액입니다. 실제 비용은 진단 후 확정됩니다.</div>
+    <button class="cart-submit" id="cartSubmit">전체 상담 신청하기</button>
+  </div>
+</aside>
+
+<aside class="cart-panel" id="recentPanel">
+  <div class="cart-head">
+    <h3>👁️ 최근 본 상품 <span id="recentHeadCount">0</span></h3>
+    <span class="x" id="recentClose">×</span>
+  </div>
+  <div class="cart-body" id="recentBody"></div>
+</aside>
+
+<aside class="cart-panel" id="wishPanel">
+  <div class="cart-head">
+    <h3>♥ 찜한 상품 <span id="wishHeadCount">0</span></h3>
+    <span class="x" id="wishClose">×</span>
+  </div>
+  <div class="cart-body" id="wishBody"></div>
+</aside>
+
+<aside class="cart-panel" id="mypagePanel">
+  <div class="cart-head">
+    <h3>마이페이지</h3>
+    <span class="x" id="mypageClose">×</span>
+  </div>
+  <div class="cart-body" id="mypageBody"></div>
+</aside>
+
+<div class="float">
+  <a class="kakao"><span class="em">💬</span>카톡상담</a>
+  <a id="floatInq"><span class="em">✉️</span>문의하기</a>
+  <a id="floatRecent"><span class="em">👁️</span>최근본<br>상품</a>
+  <a id="topBtn"><span class="em">↑</span>TOP</a>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">상품 등록</h3><span class="x" id="modalClose">×</span></div>
+    <div class="modal-body">
+      <input type="hidden" id="f-id">
+      <div class="fld"><label>상품명</label><input type="text" id="f-name"></div>
+      <div class="fld-row">
+        <div class="fld"><label>대분류</label><select id="f-cat"></select></div>
+        <div class="fld"><label>소분류</label><select id="f-sub"></select></div>
+      </div>
+      <div class="fld-row">
+        <div class="fld"><label>가격 (원)</label><input type="number" id="f-price"></div>
+        <div class="fld"><label>단위</label><input type="text" id="f-unit"></div>
+      </div>
+      <div class="fld-row">
+        <div class="fld"><label>평점 (0~5)</label><input type="number" id="f-rating" step="0.1" min="0" max="5"></div>
+        <div class="fld"><label>후기 수</label><input type="number" id="f-reviews"></div>
+      </div>
+      <div class="fld"><label>뱃지</label><select id="f-badge"><option value="">없음</option><option>BEST</option><option>HOT</option><option>NEW</option></select></div>
+      <div class="fld"><label>설명</label><textarea id="f-desc"></textarea></div>
+      <div class="fld">
+        <label style="display:flex;justify-content:space-between;align-items:center">옵션 <button type="button" id="addOptBtn" style="background:var(--navy);color:var(--gold-2);border:0;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer">+ 옵션 추가</button></label>
+        <div id="optList"></div>
+        <div style="font-size:11.5px;color:#9aa3b7;margin-top:6px;line-height:1.5">옵션을 2개 이상 넣으면 상세에서 선택형으로 표시됩니다. 비워두면 위 가격으로 단일 판매됩니다.</div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn-cancel" id="modalCancel">취소</button><button class="btn-save" id="modalSave">저장</button></div>
+  </div>
+</div>
+
+<script id="catData" type="application/json">
+{"categories":[
+{"id":"store","name":"스토어","icon":"🛍️","children":[{"id":"store-general","name":"스토어"},{"id":"store-review","name":"SNS 체험단"},{"id":"store-live","name":"쇼핑라이브│라이브커머스"},{"id":"store-funding","name":"크라우드펀딩"}]},
+{"id":"place","name":"플레이스│지도","icon":"📍","children":[{"id":"place-naver","name":"플레이스"},{"id":"place-map","name":"구글맵│카카오맵"},{"id":"place-daangn","name":"당근마켓"},{"id":"place-hotel","name":"호텔│숙박│숙소"},{"id":"place-food","name":"맛집마케팅"},{"id":"place-navi","name":"내비게이션"},{"id":"place-beauty","name":"화장품│병원│성형"},{"id":"place-skin","name":"피부관리│마사지"},{"id":"place-space","name":"공간 대여"}]},
+{"id":"app","name":"앱│어플","icon":"📱","children":[{"id":"app-aos","name":"구글플레이│AOS"},{"id":"app-ios","name":"앱스토어│IOS"},{"id":"app-one","name":"원스토어"},{"id":"app-cloud","name":"클라우드서버"}]},
+{"id":"seo","name":"SEO│검색최적화","icon":"🔍","children":[{"id":"seo-traffic","name":"트래픽"},{"id":"seo-reward","name":"리워드 트래픽"},{"id":"seo-backlink","name":"백링크"}]},
+{"id":"cpc","name":"CPC검색광고│운영대행","icon":"📈","children":[{"id":"cpc-place","name":"플레이스 광고"},{"id":"cpc-powerlink","name":"파워링크"},{"id":"cpc-shopping","name":"쇼핑검색광고"}]},
+{"id":"sns","name":"SNS 채널","icon":"💬","children":[{"id":"sns-insta","name":"인스타│페이스북 등"},{"id":"sns-kakao","name":"카카오 플랫폼"},{"id":"sns-naver","name":"네이버 플랫폼"},{"id":"sns-messenger","name":"메신저│오픈톡"},{"id":"sns-music","name":"음원 플랫폼"}]},
+{"id":"tv","name":"TV 채널","icon":"📺","children":[]},
+{"id":"cafe","name":"카페│커뮤니티","icon":"✍️","children":[{"id":"cafe-blog","name":"블로그"},{"id":"cafe-cafe","name":"카페"},{"id":"cafe-community","name":"커뮤니티"},{"id":"cafe-kin","name":"지식인│질문 Q&A"},{"id":"cafe-news","name":"언론, 기자, 뉴스 구독"}]},
+{"id":"etc","name":"기타│플랫폼","icon":"🎬","children":[{"id":"etc-webtoon","name":"웹툰│웹소설"},{"id":"etc-culture","name":"영화│뮤지컬│연극"},{"id":"etc-others","name":"기타"}]}
+]}
+</script>
+
+<script id="prodData" type="application/json">
+{"products":[
+{"id":"p-place-basic","cat":"place","sub":"place-naver","name":"네이버 플레이스 상위노출 │ 지역 키워드 실유저 최적화","price":350000,"unit":"월","rating":5.0,"reviews":128,"badge":"BEST","desc":"지역 키워드 진단부터 실유저 기반 노출까지, 매장이 검색 상단에 잡히도록 집중 관리합니다.","options":[{"id":"diag","name":"진단 + 키워드 분석 (단건)","price":150000,"unit":"1회"},{"id":"basic","name":"베이직 (1개월 관리)","price":350000,"unit":"월"},{"id":"premium","name":"프리미엄 (3개월 집중 + 주간 리포트)","price":600000,"unit":"3개월"},{"id":"integrated","name":"플레이스 + AEO 통합 (3개월)","price":900000,"unit":"3개월"}]},
+{"id":"p-place-food","cat":"place","sub":"place-food","name":"맛집 마케팅 패키지 │ 플레이스 + 리뷰 + 저장하기 통합","price":450000,"unit":"월","rating":4.9,"reviews":73,"badge":"","desc":"음식점 특화 패키지. 노출·리뷰·저장하기를 한 번에 관리해 방문 전환을 끌어올립니다.","options":[{"id":"lite","name":"라이트 (노출 + 저장하기)","price":300000,"unit":"월"},{"id":"full","name":"풀패키지 (노출 + 리뷰 + 저장하기)","price":450000,"unit":"월"}]},
+{"id":"p-place-beauty","cat":"place","sub":"place-beauty","name":"병원·성형·화장품 플레이스 마케팅 │ 업종 규제 대응 콘텐츠","price":550000,"unit":"월","rating":5.0,"reviews":41,"badge":"","desc":"의료광고 가이드라인을 고려한 콘텐츠 설계와 플레이스 노출을 함께 진행합니다.","options":[{"id":"consult","name":"의료광고 콘텐츠 컨설팅 (단건)","price":250000,"unit":"1회"},{"id":"manage","name":"월 관리 (콘텐츠 + 노출)","price":550000,"unit":"월"}]},
+{"id":"p-seo-aeo","cat":"seo","sub":"seo-traffic","name":"AEO·네이버 AI 브리핑 최적화 │ AI가 인용하는 매장 만들기","price":300000,"unit":"월","rating":5.0,"reviews":96,"badge":"NEW","desc":"AI 검색 시대의 핵심. 구조화된 정보 설계로 네이버 AI 브리핑·AI 검색에 매장이 노출되도록 만듭니다.","options":[{"id":"audit","name":"AEO 진단 리포트 (단건)","price":200000,"unit":"1회"},{"id":"setup","name":"구조화 데이터 세팅 (단건)","price":450000,"unit":"1회"},{"id":"manage","name":"월 관리 (세팅 + 모니터링)","price":300000,"unit":"월"}]},
+{"id":"p-seo-web","cat":"seo","sub":"seo-backlink","name":"웹사이트 SEO 최적화 │ 구조 진단 + 콘텐츠 + 백링크","price":400000,"unit":"월","rating":4.8,"reviews":52,"badge":"","desc":"검색엔진이 좋아하는 사이트 구조로 진단·개선하고, 키워드 콘텐츠와 백링크로 트래픽을 키웁니다.","options":[{"id":"audit","name":"SEO 진단 리포트 (단건)","price":200000,"unit":"1회"},{"id":"manage","name":"월 관리 (콘텐츠 + 백링크)","price":400000,"unit":"월"}]},
+{"id":"p-cafe-blog","cat":"cafe","sub":"cafe-blog","name":"블로그 상위노출 마케팅 │ 지역 키워드 체험단·콘텐츠 운영","price":200000,"unit":"월","rating":4.9,"reviews":178,"badge":"BEST","desc":"진성 체험단과 키워드 콘텐츠로 블로그 검색 상단을 공략. 자연스러운 후기 흐름을 설계합니다.","options":[{"id":"single","name":"포스팅 1건 (체험단)","price":80000,"unit":"건"},{"id":"pack5","name":"월 5건 패키지","price":200000,"unit":"월"},{"id":"pack10","name":"월 10건 패키지","price":360000,"unit":"월"}]},
+{"id":"p-cafe-daangn","cat":"place","sub":"place-daangn","name":"당근마켓 비즈프로필 운영대행 │ 동네 단골 만들기","price":180000,"unit":"월","rating":4.8,"reviews":39,"badge":"","desc":"당근 비즈프로필 게시글 기획·발행을 대행해 동네 노출과 단골 확보를 돕습니다.","options":[{"id":"lite","name":"라이트 (월 4건)","price":120000,"unit":"월"},{"id":"standard","name":"스탠다드 (월 8건)","price":180000,"unit":"월"}]},
+{"id":"p-cpc-place","cat":"cpc","sub":"cpc-place","name":"플레이스 광고 운영대행 │ 광고비 최적화 + 키워드 입찰 관리","price":300000,"unit":"월","rating":5.0,"reviews":87,"badge":"","desc":"플레이스 광고 입찰·키워드·예산을 데이터 기반으로 관리해 클릭당 비용을 낮춥니다."},
+{"id":"p-cpc-powerlink","cat":"cpc","sub":"cpc-powerlink","name":"파워링크 운영대행 │ 검색광고 전환 최적화","price":350000,"unit":"월","rating":4.9,"reviews":61,"badge":"","desc":"파워링크 소재·키워드·랜딩 흐름을 함께 최적화해 광고 전환율을 끌어올립니다."},
+{"id":"p-sns-insta","cat":"sns","sub":"sns-insta","name":"인스타그램 콘텐츠 + 릴스 운영 │ 자영업자 SNS 셀프마케팅","price":250000,"unit":"월","rating":4.8,"reviews":112,"badge":"","desc":"매장 브랜딩에 맞는 피드·릴스 콘텐츠를 기획·제작하고, 노출되는 운영 전략을 함께 잡습니다.","options":[{"id":"feed","name":"피드 콘텐츠 (월 8건)","price":250000,"unit":"월"},{"id":"reels","name":"피드 + 릴스 (월 8건 + 릴스 4건)","price":400000,"unit":"월"}]},
+{"id":"p-sns-tiktok","cat":"sns","sub":"sns-insta","name":"틱톡 라이브 커머스 세팅 │ 장비 + 송출 + 운영 컨설팅","price":500000,"unit":"1회","rating":5.0,"reviews":18,"badge":"NEW","desc":"라이브 판매를 위한 카메라·조명·송출 세팅부터 진행 동선까지 처음부터 끝까지 설계합니다.","options":[{"id":"consult","name":"세팅 컨설팅 (장비 가이드)","price":300000,"unit":"1회"},{"id":"full","name":"풀세팅 + 현장 지원 (1회)","price":500000,"unit":"1회"}]},
+{"id":"p-store-review","cat":"store","sub":"store-review","name":"SNS 체험단 모집·관리 │ 진성 리뷰 캠페인 운영","price":220000,"unit":"캠페인","rating":4.9,"reviews":95,"badge":"","desc":"업종에 맞는 체험단을 모집·관리하고, 노출 효과가 좋은 리뷰 콘텐츠 가이드를 제공합니다.","options":[{"id":"c10","name":"체험단 10명 캠페인","price":220000,"unit":"캠페인"},{"id":"c20","name":"체험단 20명 캠페인","price":400000,"unit":"캠페인"}]},
+{"id":"p-store-live","cat":"store","sub":"store-live","name":"쇼핑라이브 기획·운영 │ 라이브커머스 매출 설계","price":450000,"unit":"1회","rating":4.8,"reviews":27,"badge":"","desc":"라이브 방송 기획·큐시트·송출 운영까지. 시청에서 구매로 이어지는 흐름을 설계합니다.","options":[{"id":"plan","name":"기획·큐시트만 (1회)","price":250000,"unit":"1회"},{"id":"full","name":"기획 + 현장 운영 (1회)","price":450000,"unit":"1회"}]}
+]}
+</script>
+
+<script>
+const $ = s => document.querySelector(s);
+let CATS, PRODUCTS, current = {cat:null, sub:null}, editingId = null, currentProduct = null, CART = [], RECENT = [], sortMode = 'popular', WISHLIST = [], ORDERS = [], searchQuery = '';
+
+/* ===== 히어로 배너 슬라이드 =====
+   배너 추가/수정은 아래 배열만 바꾸면 됩니다.
+   img: 가로 이미지 URL (비우면 그라데이션 배경). action: 'inquiry' | {cat:'place'} 등 */
+const BANNERS = [
+  { eyebrow:'MAAKEON · ONLINE MARKETING', title:'소상공인을 위한 올인원 마케팅 스토어', desc:'플레이스부터 AEO·콘텐츠·검색광고까지, 필요한 서비스만 골라 시작하세요.', cta:'서비스 상담 신청', img:'', action:'inquiry' },
+  { eyebrow:'NAVER PLACE', title:'검색하는 손님이 가장 먼저 보는 자리에', desc:'네이버 플레이스 상위노출, 실유저 기반으로 안전하게.', cta:'플레이스 상품 보기', img:'', action:{cat:'place'} },
+  { eyebrow:'AEO · AI BRIEFING', title:'AI가 우리 매장을 인용하게 만드세요', desc:'네이버 AI 브리핑 시대, 지금 선점하는 곳이 앞서갑니다.', cta:'AEO 상품 보기', img:'', action:{cat:'seo'} },
+];
+let heroIdx = 0, heroTimer = null;
+function renderHero(){
+  $('#heroTrack').innerHTML = BANNERS.map(b=>{
+    const style = b.img ? ` style="background-image:url('${b.img}')"` : '';
+    return `<div class="hero-slide${b.img?' has-img':''}" data-haction='${JSON.stringify(b.action)}'${style}>
+      <div class="hs-inner">
+        <div class="hs-eyebrow">${b.eyebrow||''}</div>
+        <div class="hs-title">${b.title||''}</div>
+        <div class="hs-desc">${b.desc||''}</div>
+        ${b.cta?`<span class="hs-cta">${b.cta}</span>`:''}
+      </div></div>`;
+  }).join('');
+  $('#heroDots').innerHTML = BANNERS.map((_,i)=>`<button data-hdot="${i}" class="${i===0?'on':''}"></button>`).join('');
+  goHero(0);
+}
+function goHero(i){
+  heroIdx = (i+BANNERS.length)%BANNERS.length;
+  $('#heroTrack').style.transform = `translateX(-${heroIdx*100}%)`;
+  document.querySelectorAll('#heroDots button').forEach((d,di)=>d.classList.toggle('on',di===heroIdx));
+}
+function nextHero(){ goHero(heroIdx+1); }
+function startHeroAuto(){ stopHeroAuto(); if(BANNERS.length>1) heroTimer=setInterval(nextHero,5000); }
+function stopHeroAuto(){ if(heroTimer) clearInterval(heroTimer); }
+
+
+async function loadJSON(url, fb){ try{const r=await fetch(url);if(r.ok)return await r.json();}catch(e){} return JSON.parse(document.getElementById(fb).textContent); }
+function countBySub(id){ return PRODUCTS.filter(p=>p.sub===id).length; }
+function catName(id){ return CATS.find(c=>c.id===id)?.name||''; }
+function subName(cat,sub){ return CATS.find(c=>c.id===cat)?.children.find(s=>s.id===sub)?.name||''; }
+
+function renderNav(){
+  $('#navList').innerHTML = CATS.map(c=>{
+    const sub=(c.children&&c.children.length)?`<div class="submenu">${c.children.map(s=>`<a data-cat="${c.id}" data-sub="${s.id}">${s.name}</a>`).join('')}</div>`:'';
+    return `<div class="nav-item"><a data-cat="${c.id}">${c.name}</a>${sub}</div>`;
+  }).join('');
+}
+function renderSide(){
+  $('#sideCats').innerHTML = CATS.map((c,i)=>{
+    const subs=(c.children||[]).map(s=>`<a data-cat="${c.id}" data-sub="${s.id}">${s.name}<span class="cnt">${countBySub(s.id)||''}</span></a>`).join('');
+    return `<div class="cat-group${i===0?' open':''}" data-cat="${c.id}"><a><span class="nm">${c.icon||''} ${c.name}</span><span class="arr">›</span></a><div class="cat-sub">${subs||'<a style="color:#b3bacb">하위 분류 없음</a>'}</div></div>`;
+  }).join('');
+}
+function renderFoot(){ $('#footCats').innerHTML = CATS.slice(0,5).map(c=>`<a data-cat="${c.id}">${c.name}</a>`).join(''); }
+
+function productCard(p){
+  const tag = subName(p.cat,p.sub)||catName(p.cat);
+  const bdg = p.badge?`<div class="bdg">${p.badge}</div>`:'';
+  const hasOpts = p.options && p.options.length>1;
+  const minPrice = hasOpts ? Math.min(...p.options.map(o=>o.price)) : p.price;
+  const prText = hasOpts
+    ? `${Number(minPrice).toLocaleString()}원~ <small>/ 옵션 ${p.options.length}종</small>`
+    : `${Number(p.price).toLocaleString()}원 <small>/ ${p.unit||''}</small>`;
+  const liked = WISHLIST.includes(p.id);
+  return `<div class="card" data-open="${p.id}">${bdg}
+    <button class="like-btn${liked?' on':''}" data-like="${p.id}" title="찜하기">${liked?'♥':'♡'}</button>
+    <div class="thumb">${p.name.split('│')[0].trim()}</div>
+    <div class="meta"><span class="tag">${tag}</span>
+      <div class="nm">${p.name}</div><div class="dsc">${p.desc||''}</div>
+      <div class="pr">${prText}</div>
+      <div class="rt"><b>★ ${p.rating}</b> · 후기 ${p.reviews}</div>
+      <div class="admin-tools"><button class="ed" data-edit="${p.id}">수정</button><button class="del" data-del="${p.id}">삭제</button></div>
+    </div></div>`;
+}
+function renderGrid(){
+  const {cat,sub}=current;
+  let list = PRODUCTS.filter(p=> sub?p.sub===sub:p.cat===cat);
+  if(sortMode==='low') list.sort((a,b)=>a.price-b.price);
+  else if(sortMode==='high') list.sort((a,b)=>b.price-a.price);
+  else if(sortMode==='rating') list.sort((a,b)=>b.rating-a.rating||b.reviews-a.reviews);
+  else { const order={BEST:0,HOT:1,NEW:2,'':3}; list.sort((a,b)=>(order[a.badge]??3)-(order[b.badge]??3)||b.reviews-a.reviews); }
+  let html = list.map(productCard).join('') || `<div class="empty"><div class="ic">📦</div><div class="t">이 카테고리에 등록된 상품이 없습니다</div></div>`;
+  html += `<div class="add-slot" id="addSlot"><div class="plus">+</div><div class="lbl">상품 등록</div></div>`;
+  $('#grid').innerHTML = html;
+}
+function selectCategory(catId,subId){
+  showList();
+  const cat=CATS.find(c=>c.id===catId); if(!cat)return;
+  current={cat:catId,sub:subId||null};
+  const sub=subId?cat.children.find(s=>s.id===subId):null;
+  document.querySelectorAll('.cat-group').forEach(g=>g.classList.toggle('open',g.dataset.cat===catId));
+  document.querySelectorAll('.cat-sub a').forEach(a=>a.classList.toggle('on',subId&&a.dataset.sub===subId));
+  $('#areaTitle').textContent = sub?sub.name:cat.name;
+  $('#crumb').innerHTML = `<a data-home="1">홈</a><span>›</span><a data-cat="${cat.id}">${cat.name}</a>`+(sub?`<span>›</span>${sub.name}`:'');
+  renderGrid();
+}
+
+/* ===== 뷰 전환 ===== */
+function showList(){ $('#listView').classList.remove('hidden'); $('#detailView').classList.add('hidden'); }
+function showDetail(){ $('#listView').classList.add('hidden'); $('#detailView').classList.remove('hidden'); }
+
+function openDetail(id){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  currentProduct = p;
+  // 최근 본 상품 기록 (중복 제거, 최신 8개)
+  RECENT = [id, ...RECENT.filter(x=>x!==id)].slice(0,8);
+  const tag = subName(p.cat,p.sub)||catName(p.cat);
+  const shortName = p.name.split('│')[0].trim();
+  const tail = p.name.includes('│') ? p.name.split('│')[1].trim() : '';
+  $('#dBadge').textContent = p.badge||'RISING';
+  $('#dGalleryTitle').innerHTML = shortName.replace(/(상위노출|최적화|마케팅|운영|커머스|세팅|진단)/,'<em>$1</em>');
+  $('#dGallerySub').textContent = tail || p.desc.slice(0,30);
+  $('#dTags').innerHTML = `<a data-cat="${p.cat}">${catName(p.cat)}</a>`+(p.sub?`<a data-cat="${p.cat}" data-sub="${p.sub}">${subName(p.cat,p.sub)}</a>`:'');
+  $('#dName').textContent = p.name;
+  $('#dScore').textContent = p.rating;
+  $('#dReviews').textContent = `(${p.reviews}개의 평가)`;
+  $('#dDesc').textContent = p.desc;
+  // 옵션 선택 UI
+  const optWrap = $('#dOptWrap'), optSel = $('#dOpt');
+  if(p.options && p.options.length > 1){
+    optWrap.classList.remove('hidden');
+    optSel.innerHTML = p.options.map((o,i)=>`<option value="${i}">${o.name} — ${Number(o.price).toLocaleString()}원${o.unit?' / '+o.unit:''}</option>`).join('');
+    // 기본 선택: 대표가격과 같은 옵션, 없으면 첫번째
+    const defIdx = p.options.findIndex(o=>o.price===p.price);
+    optSel.value = defIdx>=0 ? defIdx : 0;
+    const applyOpt = ()=>{
+      const o = p.options[+optSel.value];
+      $('#dPrice').innerHTML = `${Number(o.price).toLocaleString()}원 <small>/ ${o.unit||''}</small>`;
+    };
+    optSel.onchange = applyOpt;
+    applyOpt();
+  }else{
+    optWrap.classList.add('hidden');
+    optSel.onchange = null;
+    $('#dPrice').innerHTML = `${Number(p.price).toLocaleString()}원 <small>/ ${p.unit||''}</small>`;
+  }
+  $('#dCrumb').innerHTML = `<a data-home="1">홈</a><span>›</span><a data-cat="${p.cat}">${catName(p.cat)}</a>`+(p.sub?`<span>›</span><a data-cat="${p.cat}" data-sub="${p.sub}">${subName(p.cat,p.sub)}</a>`:'');
+  $('#dFeatTitle').textContent = shortName;
+  $('#dFeatDesc').textContent = p.desc;
+  $('#dFeatGrid').innerHTML = featCardsFor(p.cat);
+  $('#dRevScore').textContent = p.rating.toFixed(1);
+  $('#dRevMeta').textContent = `${p.reviews}개의 평가`;
+  // 갤러리 썸네일 (클릭 시 대표 이미지 문구 전환)
+  const thumbLabels = ['대표','노출 사례','작업 리포트','상담 안내'];
+  const thumbSubs = [tail||p.desc.slice(0,30), '진행 후 노출 변화를 데이터로 보여드립니다', '매주 발송되는 순위·성과 리포트', '전담 컨설턴트 1:1 상담 안내'];
+  $('#dThumbs').innerHTML = thumbLabels.map((t,i)=>`<div class="t${i===0?' on':''}" data-thumb="${i}">${t}</div>`).join('');
+  $('#dThumbs').dataset.subs = JSON.stringify(thumbSubs);
+  // 찜 버튼
+  const liked = WISHLIST.includes(p.id);
+  $('#dLikeBtn').innerHTML = liked?'♥ 찜함':'♡ 찜하기';
+  $('#dLikeBtn').dataset.like = p.id;
+  $('#dLikeBtn').classList.toggle('liked', liked);
+  // 상품별 후기 생성 (상품 특성 반영)
+  $('#dReviewList').innerHTML = reviewsFor(p);
+  // 비슷한 서비스: 같은 대분류 다른 상품 4개
+  const sims = PRODUCTS.filter(x=>x.cat===p.cat && x.id!==p.id).slice(0,4);
+  const pool = sims.length?sims:PRODUCTS.filter(x=>x.id!==p.id).slice(0,4);
+  $('#dSimilar').innerHTML = pool.map(productCard).join('');
+  showDetail();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function reviewsFor(p){
+  const kw = p.name.split('│')[0].trim();
+  const jobs = ['카페','미용실','음식점','피부관리실','학원','꽃집','병원','네일샵'];
+  const bodies = [
+    `${kw} 진행하고 한 달쯤 지나니 손님이 "검색하다 봤다"고 하시더라고요. 시작하길 잘했어요.`,
+    `매주 리포트를 보내주셔서 뭐가 어떻게 되는지 눈에 보여 믿음이 갔습니다.`,
+    `선결제로 데인 적 있어서 반신반의했는데, 진단부터 차분히 해주셔서 안심됐어요.`,
+    `${kw} 덕분에 노출이 확실히 늘었어요. 문의 전화가 많아진 게 체감됩니다.`,
+    `처음엔 반신반의했는데 데이터로 보여주시니 신뢰가 생겼습니다. 재계약했어요.`
+  ];
+  const dates = ['2026-05-28','2026-05-25','2026-05-21','2026-05-16','2026-05-09'];
+  // 후기 수에 비례해 3~4개 노출 (의사난수: id 기반 고정)
+  const seed = p.id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const n = 3 + (seed % 2);
+  let html='';
+  for(let i=0;i<n;i++){
+    const stars = '★★★★★'.slice(0, p.rating>=4.8?5:(p.rating>=4.5?5:4));
+    html += `<div class="review"><div class="top"><span class="rstars">${'★★★★★'}</span><span class="date">${dates[(seed+i)%dates.length]}</span></div>
+      <div class="body">${bodies[(seed+i)%bodies.length]}</div>
+      <div class="who">${'김이박최정한'[(seed+i)%6]}** · ${jobs[(seed+i)%jobs.length]}</div></div>`;
+  }
+  return html;
+}
+
+/* ===== 선택 옵션 + 장바구니 패널 ===== */
+function getSelected(){
+  const p = currentProduct; if(!p) return null;
+  if(p.options && p.options.length>1){
+    const o = p.options[+$('#dOpt').value || 0];
+    return { pid:p.id, name:p.product?.name||p.name, optId:o.id||o.name, optName:o.name, price:o.price, unit:o.unit };
+  }
+  return { pid:p.id, name:p.name, optId:'base', optName:'기본', price:p.price, unit:p.unit };
+}
+function updateCartCount(){
+  const qty = CART.reduce((a,b)=>a+b.qty,0);
+  $('#cartCount').textContent = qty ? `(${qty})` : '';
+  $('#cartHeadCount').textContent = qty;
+}
+function addToCart(){
+  const s = getSelected(); if(!s) return;
+  // 같은 상품+옵션이면 수량 증가
+  const ex = CART.find(c=>c.pid===s.pid && c.optId===s.optId);
+  if(ex){ ex.qty++; } else { CART.push({...s, qty:1}); }
+  updateCartCount(); renderCart(); openCart();
+}
+function renderCart(){
+  if(!CART.length){
+    $('#cartBody').innerHTML = `<div class="cart-empty"><div class="ic">🛒</div><div class="t">장바구니가 비어 있습니다</div></div>`;
+    $('#cartTotal').textContent = '0원';
+    $('#cartSubmit').disabled = true;
+    return;
+  }
+  $('#cartSubmit').disabled = false;
+  $('#cartBody').innerHTML = CART.map((c,i)=>{
+    const short = c.name.split('│')[0].trim();
+    return `<div class="citem">
+      <div class="ci-thumb">📈</div>
+      <div class="ci-main">
+        <div class="ci-name">${short}</div>
+        <div class="ci-opt">옵션: ${c.optName} · ${Number(c.price).toLocaleString()}원/${c.unit||''}</div>
+        <div class="ci-bottom">
+          <div class="qty">
+            <button data-q="dec" data-i="${i}">−</button><span>${c.qty}</span><button data-q="inc" data-i="${i}">+</button>
+          </div>
+          <div class="ci-price">${Number(c.price*c.qty).toLocaleString()}원</div>
+        </div>
+        <button class="ci-del" data-cdel="${i}">삭제</button>
+      </div></div>`;
+  }).join('');
+  const total = CART.reduce((a,b)=>a+b.price*b.qty,0);
+  $('#cartTotal').textContent = `${Number(total).toLocaleString()}원`;
+}
+function openCart(){ renderCart(); $('#cartPanel').classList.add('show'); $('#cartOverlay').classList.add('show'); }
+function closeCart(){ $('#cartPanel').classList.remove('show'); $('#cartOverlay').classList.remove('show'); }
+
+/* ===== 최근 본 상품 패널 ===== */
+function renderRecent(){
+  $('#recentHeadCount').textContent = RECENT.length;
+  if(!RECENT.length){
+    $('#recentBody').innerHTML = `<div class="cart-empty"><div class="ic">👁️</div><div class="t">최근 본 상품이 없습니다</div></div>`;
+    return;
+  }
+  $('#recentBody').innerHTML = RECENT.map(id=>{
+    const p = PRODUCTS.find(x=>x.id===id); if(!p) return '';
+    const short = p.name.split('│')[0].trim();
+    const minP = (p.options&&p.options.length>1) ? Math.min(...p.options.map(o=>o.price)) : p.price;
+    return `<div class="citem" data-ropen="${p.id}" style="cursor:pointer">
+      <div class="ci-thumb">📈</div>
+      <div class="ci-main">
+        <div class="ci-name">${short}</div>
+        <div class="ci-opt">${tagFor(p)} · ★ ${p.rating}</div>
+        <div class="ci-price">${Number(minP).toLocaleString()}원${(p.options&&p.options.length>1)?'~':''}</div>
+      </div></div>`;
+  }).join('');
+}
+function tagFor(p){ return subName(p.cat,p.sub)||catName(p.cat); }
+function featCardsFor(cat){
+  const map = {
+    place:[['📍','지역 키워드 정밀 진단','업종·상권·경쟁 매장을 분석해 전환이 일어나는 키워드부터 공략합니다.'],['👥','100% 실유저 방식','어뷰징이 아닌 실제 사용자 행동 기반으로 저품질 위험을 줄입니다.'],['📊','주간 순위 리포트','플레이스 통계와 연동해 순위 변동을 매주 투명하게 공유합니다.']],
+    seo:[['🔍','검색 구조 진단','검색엔진·AI가 읽기 좋은 구조로 사이트와 정보를 진단·개선합니다.'],['🤖','AI 인용 최적화','AEO·구조화 데이터로 AI 검색에 매장이 인용되도록 설계합니다.'],['📈','트래픽 성장','키워드 콘텐츠와 백링크로 자연 유입을 꾸준히 키웁니다.']],
+    cafe:[['✍️','진성 콘텐츠 설계','읽는 사람이 신뢰하는 자연스러운 후기·콘텐츠 흐름을 만듭니다.'],['👥','실사용자 체험단','업종에 맞는 체험단으로 검색 상단과 방문 전환을 동시에 잡습니다.'],['📊','노출 모니터링','키워드별 노출 현황을 추적하며 전략을 조정합니다.']],
+    cpc:[['🎯','입찰·예산 최적화','데이터 기반으로 키워드 입찰과 예산을 관리해 효율을 높입니다.'],['🧩','소재·랜딩 개선','광고 소재와 랜딩 흐름을 함께 다듬어 전환율을 끌어올립니다.'],['📊','성과 리포트','광고비 대비 성과를 투명하게 리포트로 공유합니다.']],
+    sns:[['🎨','브랜드 콘텐츠','매장 톤에 맞는 피드·릴스·숏폼 콘텐츠를 기획·제작합니다.'],['🚀','노출 전략','알고리즘을 고려해 비팔로워에게도 닿는 운영 전략을 잡습니다.'],['💬','반응 관리','댓글·저장·공유를 유도하는 동선을 함께 설계합니다.']],
+    store:[['🛒','구매 전환 설계','찜·트래픽·구매평을 함께 관리해 노출에서 구매로 잇습니다.'],['👥','실사용자 기반','실제 사용자 활동으로 안전하게 상품 신뢰도를 쌓습니다.'],['📊','성과 추적','주요 지표 변화를 정리해 다음 액션을 제안합니다.']]
+  };
+  const cards = map[cat] || map.place;
+  return cards.map(c=>`<div class="feat-card"><div class="ic">${c[0]}</div><h3>${c[1]}</h3><p>${c[2]}</p></div>`).join('');
+}
+function openRecent(){ renderRecent(); $('#recentPanel').classList.add('show'); $('#cartOverlay').classList.add('show'); }
+function closeRecent(){ $('#recentPanel').classList.remove('show'); $('#cartOverlay').classList.remove('show'); }
+
+/* ===== 찜한 상품 패널 ===== */
+function renderWish(){
+  $('#wishHeadCount').textContent = WISHLIST.length;
+  if(!WISHLIST.length){
+    $('#wishBody').innerHTML = `<div class="cart-empty"><div class="ic">♡</div><div class="t">찜한 상품이 없습니다</div></div>`;
+    return;
+  }
+  $('#wishBody').innerHTML = WISHLIST.map(id=>{
+    const p=PRODUCTS.find(x=>x.id===id); if(!p) return '';
+    const short=p.name.split('│')[0].trim();
+    const minP=(p.options&&p.options.length>1)?Math.min(...p.options.map(o=>o.price)):p.price;
+    return `<div class="citem"><div class="ci-thumb" data-wopen="${p.id}" style="cursor:pointer">📈</div>
+      <div class="ci-main">
+        <div class="ci-name" data-wopen="${p.id}" style="cursor:pointer">${short}</div>
+        <div class="ci-opt">${tagFor(p)} · ★ ${p.rating}</div>
+        <div class="ci-bottom"><div class="ci-price">${Number(minP).toLocaleString()}원${(p.options&&p.options.length>1)?'~':''}</div></div>
+        <button class="ci-del" data-wdel="${p.id}">찜 해제</button>
+      </div></div>`;
+  }).join('');
+}
+function openWish(){ renderWish(); closeAllPanels(); $('#wishPanel').classList.add('show'); $('#cartOverlay').classList.add('show'); }
+function closeWish(){ $('#wishPanel').classList.remove('show'); $('#cartOverlay').classList.remove('show'); }
+
+/* ===== 마이페이지 패널 ===== */
+function renderMypage(){
+  if(!currentUser){ $('#mypageBody').innerHTML = `<div class="cart-empty"><div class="ic">🔒</div><div class="t">로그인이 필요합니다</div></div>`; return; }
+  const u=currentUser;
+  const myOrders=ORDERS.filter(o=>o.uid===u.uid);
+  const orderHtml = myOrders.length ? myOrders.map(o=>`
+    <div class="mp-order">
+      <div class="mp-order-top"><span class="mp-date">${o.date}</span><span class="mp-amt">${Number(o.total).toLocaleString()}원</span></div>
+      <div class="mp-items">${o.items.map(it=>`${it.name.split('│')[0].trim()} [${it.optName}]${it.qty>1?' ×'+it.qty:''}`).join('<br>')}</div>
+      <span class="mp-status">${o.status}</span>
+    </div>`).join('') : `<div style="color:#9aa3b7;font-size:13px;padding:14px 0">아직 상담/신청 내역이 없습니다.</div>`;
+  $('#mypageBody').innerHTML = `
+    <div class="mp-profile">
+      <div class="mp-name">${u.name}님</div>
+      <div class="mp-sub">${u.company||''}</div>
+      <div class="mp-row"><span>아이디</span><b>${u.uid}</b></div>
+      <div class="mp-row"><span>이메일</span><b>${u.email||'-'}</b></div>
+      <div class="mp-row"><span>관심 서비스</span><b>${(u.interests&&u.interests.length)?u.interests.join(', '):'-'}</b></div>
+      ${u.bizFile?`<div class="mp-row"><span>사업자등록증</span><b>${u.bizFile}</b></div>`:''}
+    </div>
+    <div class="mp-sec-tit">상담 · 신청 내역 (${myOrders.length})</div>
+    ${orderHtml}`;
+}
+function openMypage(){ if(!currentUser){ openAuth('login'); return; } renderMypage(); closeAllPanels(); $('#mypagePanel').classList.add('show'); $('#cartOverlay').classList.add('show'); }
+function closeMypage(){ $('#mypagePanel').classList.remove('show'); $('#cartOverlay').classList.remove('show'); }
+
+function closeAllPanels(){ closeCart(); closeRecent(); $('#wishPanel').classList.remove('show'); $('#mypagePanel').classList.remove('show'); }
+
+function submitInquiry(items){
+  // 상세 '상담 신청하기' → 현재 선택 1건만, 장바구니 제출 → 전체
+  const list = items || (function(){ const s=getSelected(); return s?[{...s,qty:1}]:[]; })();
+  if(!list.length){ alert('신청할 상품이 없습니다.'); return; }
+  const total = list.reduce((a,b)=>a+b.price*(b.qty||1),0);
+  const summary = list.map(s=>`· ${s.name.split('│')[0].trim()} [${s.optName}]${s.qty>1?' ×'+s.qty:''} — ${Number(s.price*(s.qty||1)).toLocaleString()}원/${s.unit||''}`).join('\n');
+  // 로그인 사용자면 마이페이지 신청 내역에 기록
+  if(currentUser){
+    const d=new Date();
+    ORDERS.push({ uid:currentUser.uid, date:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, items:list.map(s=>({name:s.name,optName:s.optName,qty:s.qty||1})), total, status:'상담 접수' });
+  }
+  const loginNote = currentUser ? '\n\n마이페이지 > 신청 내역에서 확인하실 수 있습니다.' : '\n\n로그인하시면 신청 내역이 마이페이지에 저장됩니다.';
+  // 실제 운영: 아래 내역을 카카오 채널/문의폼/메일로 전송하도록 연결
+  alert(`상담 신청이 접수되었습니다. 담당 컨설턴트가 곧 연락드릴게요.\n\n[신청 내역]\n${summary}\n\n예상 금액 합계: ${Number(total).toLocaleString()}원${loginNote}`);
+  if(items){ CART=[]; updateCartCount(); renderCart(); closeCart(); }
+}
+
+$('#dCartBtn')?.addEventListener('click', addToCart);
+$('#dInquiryBtn')?.addEventListener('click', ()=>submitInquiry());
+function toggleWish(id){
+  if(WISHLIST.includes(id)) WISHLIST = WISHLIST.filter(x=>x!==id);
+  else WISHLIST.push(id);
+  updateWishCount();
+  const on=WISHLIST.includes(id);
+  // 카드 하트
+  document.querySelectorAll(`.like-btn[data-like="${id}"]`).forEach(b=>{ b.classList.toggle('on',on); b.textContent=on?'♥':'♡'; });
+  // 상세 찜 버튼
+  const dl=$('#dLikeBtn'); if(dl && dl.dataset.like===id){ dl.innerHTML=on?'♥ 찜함':'♡ 찜하기'; dl.classList.toggle('liked',on); }
+}
+function updateWishCount(){
+  const n=WISHLIST.length;
+  const el=$('#wishCount'); if(el) el.textContent = n?`(${n})`:'';
+}
+$('#cartLink')?.addEventListener('click', openCart);
+$('#cartClose')?.addEventListener('click', closeCart);
+$('#cartOverlay')?.addEventListener('click', closeAllPanels);
+$('#wishLink')?.addEventListener('click', openWish);
+$('#wishClose')?.addEventListener('click', closeWish);
+$('#mypageLink')?.addEventListener('click', openMypage);
+$('#mypageClose')?.addEventListener('click', closeMypage);
+$('#wishBody')?.addEventListener('click', e=>{
+  const op=e.target.closest('[data-wopen]'); if(op){ closeWish(); openDetail(op.dataset.wopen); return; }
+  const dl=e.target.closest('[data-wdel]'); if(dl){ toggleWish(dl.dataset.wdel); renderWish(); }
+});
+$('#floatRecent')?.addEventListener('click', openRecent);
+$('#heroPrev')?.addEventListener('click', ()=>{ goHero(heroIdx-1); startHeroAuto(); });
+$('#heroNext')?.addEventListener('click', ()=>{ goHero(heroIdx+1); startHeroAuto(); });
+$('#heroDots')?.addEventListener('click', e=>{ const d=e.target.closest('[data-hdot]'); if(d){ goHero(+d.dataset.hdot); startHeroAuto(); } });
+$('#heroSlider')?.addEventListener('mouseenter', stopHeroAuto);
+$('#heroSlider')?.addEventListener('mouseleave', startHeroAuto);
+$('#heroTrack')?.addEventListener('click', e=>{
+  const slide=e.target.closest('[data-haction]'); if(!slide) return;
+  let act; try{ act=JSON.parse(slide.dataset.haction); }catch(_){ act=slide.dataset.haction; }
+  if(act==='inquiry') openInq();
+  else if(act && act.cat) selectCategory(act.cat);
+});
+$('#recentClose')?.addEventListener('click', closeRecent);
+$('#recentBody')?.addEventListener('click', e=>{
+  const r=e.target.closest('[data-ropen]');
+  if(r){ closeRecent(); openDetail(r.dataset.ropen); }
+});
+$('#cartSubmit')?.addEventListener('click', ()=>submitInquiry(CART));
+$('#cartBody')?.addEventListener('click', e=>{
+  const inc=e.target.closest('[data-q]');
+  if(inc){ const i=+inc.dataset.i; if(inc.dataset.q==='inc')CART[i].qty++; else if(CART[i].qty>1)CART[i].qty--; updateCartCount(); renderCart(); return; }
+  const del=e.target.closest('[data-cdel]');
+  if(del){ CART.splice(+del.dataset.cdel,1); updateCartCount(); renderCart(); }
+});
+
+/* ===== 정렬 ===== */
+$('#sortBar')?.addEventListener('click', e=>{
+  const a=e.target.closest('[data-sort]'); if(!a) return;
+  sortMode=a.dataset.sort;
+  document.querySelectorAll('#sortBar a').forEach(x=>x.classList.remove('on'));
+  a.classList.add('on');
+  renderGrid();
+});
+
+/* ===== 문의하기 모달 ===== */
+function openInq(){
+  if(currentUser){
+    if(!$('#inq-name').value) $('#inq-name').value = currentUser.name||'';
+    if(!$('#inq-email').value) $('#inq-email').value = currentUser.email||'';
+  }
+  $('#inqBg').classList.add('show');
+}
+function closeInq(){ $('#inqBg').classList.remove('show'); }
+$('#floatInq')?.addEventListener('click', openInq);
+$('#noticeBar')?.addEventListener('click', openInq);
+$('#inqClose')?.addEventListener('click', closeInq);
+$('#inqCancel')?.addEventListener('click', closeInq);
+$('#inqBg')?.addEventListener('click', e=>{ if(e.target===$('#inqBg')) closeInq(); });
+$('#inqSubmit')?.addEventListener('click', ()=>{
+  if(!$('#inq-name').value.trim()||!$('#inq-phone').value.trim()){ alert('성함과 연락처를 입력해 주세요.'); return; }
+  if(!$('#inq-agree').checked){ alert('개인정보 수집·이용에 동의해 주세요.'); return; }
+  alert(`문의가 접수되었습니다. 담당 컨설턴트가 곧 연락드릴게요.\n\n분야: ${$('#inq-field').value}\n예산: ${$('#inq-budget').value}\n성함: ${$('#inq-name').value}\n연락처: ${$('#inq-phone').value}\n\n※ 실제 연동 시 이 내용이 카카오 채널·문의 폼으로 전송됩니다.`);
+  closeInq();
+});
+
+/* ===== 로그인 / 회원가입 (데모: 브라우저 메모리 임시 저장) ===== */
+let USERS = [], currentUser = null, authMode = 'login';
+function openAuth(mode){
+  authMode = mode || 'login';
+  setAuthMode(authMode);
+  $('#authBg').classList.add('show');
+}
+function closeAuth(){ $('#authBg').classList.remove('show'); }
+function setAuthMode(mode){
+  authMode = mode;
+  const login = mode==='login';
+  $('#tabLogin').classList.toggle('on', login);
+  $('#tabSignup').classList.toggle('on', !login);
+  $('#loginForm').classList.toggle('hidden', !login);
+  $('#signupForm').classList.toggle('hidden', login);
+  $('#authTitle').textContent = login ? '로그인' : '회원가입';
+  $('#authSubmit').textContent = login ? '로그인' : '가입하고 시작하기';
+}
+function applyAuthUI(){
+  if(currentUser){
+    $('#authLinks').classList.add('hidden');
+    $('#userLinks').classList.remove('hidden');
+    $('#welcomeMsg').textContent = `${currentUser.name}님`;
+    $('#mypageLink')?.classList.remove('hidden');
+  }else{
+    $('#authLinks').classList.remove('hidden');
+    $('#userLinks').classList.add('hidden');
+    $('#mypageLink')?.classList.add('hidden');
+  }
+}
+$('#loginLink')?.addEventListener('click', ()=>openAuth('login'));
+$('#signupLink')?.addEventListener('click', ()=>openAuth('signup'));
+$('#tabLogin')?.addEventListener('click', ()=>setAuthMode('login'));
+$('#tabSignup')?.addEventListener('click', ()=>setAuthMode('signup'));
+$('#authClose')?.addEventListener('click', closeAuth);
+$('#authBg')?.addEventListener('click', e=>{ if(e.target===$('#authBg')) closeAuth(); });
+$('#logoutLink')?.addEventListener('click', ()=>{ currentUser=null; applyAuthUI(); alert('로그아웃되었습니다.'); });
+$('#topCart')?.addEventListener('click', openCart);
+$('#authSubmit')?.addEventListener('click', ()=>{
+  if(authMode==='signup'){
+    const uid=$('#su-id').value.trim(), pw=$('#su-pw').value, pw2=$('#su-pw2').value;
+    const name=$('#su-name').value.trim(), company=$('#su-company').value.trim(), email=$('#su-email').value.trim();
+    const interests=[...document.querySelectorAll('#suInterest input:checked')].map(c=>c.value);
+    const fileName=$('#su-file').files[0]?.name||'';
+    if(!uid||!pw||!pw2||!name||!company||!email){ alert('필수 항목(*)을 모두 입력해 주세요.'); return; }
+    if(uid.length<4){ alert('아이디는 4자 이상이어야 합니다.'); return; }
+    if(pw.length<6){ alert('비밀번호는 6자 이상이어야 합니다.'); return; }
+    if(pw!==pw2){ alert('비밀번호가 일치하지 않습니다.'); return; }
+    if(!$('#su-agree').checked){ alert('약관에 동의해 주세요.'); return; }
+    if(USERS.find(u=>u.uid===uid)){ alert('이미 사용 중인 아이디입니다.'); return; }
+    const user={uid,pw,name,company,email,interests,bizFile:fileName};
+    USERS.push(user); currentUser=user; applyAuthUI(); closeAuth();
+    const intTxt = interests.length?`\n관심 서비스: ${interests.join(', ')}`:'';
+    alert(`${name}님(${company}), 가입을 환영합니다! 바로 로그인되었습니다.${intTxt}`);
+  }else{
+    const uid=$('#lg-id').value.trim(), pw=$('#lg-pw').value;
+    if(!uid||!pw){ alert('아이디와 비밀번호를 입력해 주세요.'); return; }
+    const user=USERS.find(u=>u.uid===uid && u.pw===pw);
+    if(!user){ alert('아이디 또는 비밀번호가 일치하지 않습니다.\n(데모: 먼저 회원가입을 해주세요.)'); return; }
+    currentUser=user; applyAuthUI(); closeAuth();
+    alert(`${user.name}님, 환영합니다!`);
+  }
+});
+/* 사업자등록증 파일 선택 표시 */
+$('#su-file')?.addEventListener('change', e=>{
+  const f=e.target.files[0];
+  $('#suFileTx').textContent = f ? f.name : '파일을 선택하세요 (이미지·PDF)';
+  $('#suFileLabel').classList.toggle('has-file', !!f);
+});
+
+/* ===== 관리자 ===== */
+$('#adminToggle').addEventListener('click',()=>{
+  document.body.classList.toggle('admin');
+  $('#adminToggle').textContent = document.body.classList.contains('admin')?'✓ 관리자 모드 ON':'⚙ 관리자 모드';
+});
+function fillSub(catId,sel){ const c=CATS.find(x=>x.id===catId); $('#f-sub').innerHTML=(c.children||[]).map(s=>`<option value="${s.id}">${s.name}</option>`).join('')||'<option value="">-</option>'; if(sel)$('#f-sub').value=sel; }
+function optRowHTML(o){
+  o = o||{name:'',price:'',unit:''};
+  return `<div class="opt-row">
+    <input class="o-name" placeholder="옵션명" value="${(o.name||'').replace(/"/g,'&quot;')}">
+    <input class="o-price" type="number" placeholder="가격" value="${o.price||''}">
+    <input class="o-unit" placeholder="단위" value="${o.unit||''}">
+    <div class="rm" title="삭제">×</div>
+  </div>`;
+}
+function renderOptEditor(opts){
+  $('#optList').innerHTML = (opts||[]).map(optRowHTML).join('');
+}
+$('#addOptBtn').addEventListener('click',()=>{ $('#optList').insertAdjacentHTML('beforeend', optRowHTML()); });
+$('#optList').addEventListener('click',e=>{ if(e.target.classList.contains('rm')) e.target.closest('.opt-row').remove(); });
+function collectOptions(){
+  const rows=[...document.querySelectorAll('#optList .opt-row')];
+  const opts=rows.map(r=>({
+    name:r.querySelector('.o-name').value.trim(),
+    price:+r.querySelector('.o-price').value||0,
+    unit:r.querySelector('.o-unit').value.trim()
+  })).filter(o=>o.name);
+  return opts;
+}
+function openModal(p){
+  editingId=p?p.id:null;
+  $('#modalTitle').textContent=p?'상품 수정':'상품 등록';
+  $('#f-cat').innerHTML=CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  const catId=p?.cat||current.cat||CATS[0].id; $('#f-cat').value=catId; fillSub(catId,p?.sub||current.sub);
+  $('#f-id').value=p?.id||''; $('#f-name').value=p?.name||''; $('#f-price').value=p?.price||'';
+  $('#f-unit').value=p?.unit||'월'; $('#f-rating').value=p?.rating||5.0; $('#f-reviews').value=p?.reviews||0;
+  $('#f-badge').value=p?.badge||''; $('#f-desc').value=p?.desc||'';
+  renderOptEditor(p?.options||[]);
+  $('#modalBg').classList.add('show');
+}
+$('#f-cat').addEventListener('change',e=>fillSub(e.target.value));
+function closeModal(){ $('#modalBg').classList.remove('show'); editingId=null; }
+$('#modalClose').onclick=closeModal; $('#modalCancel').onclick=closeModal;
+$('#modalBg').addEventListener('click',e=>{if(e.target===$('#modalBg'))closeModal();});
+$('#modalSave').addEventListener('click',()=>{
+  const name=$('#f-name').value.trim(); if(!name){alert('상품명을 입력하세요');return;}
+  const opts=collectOptions();
+  const d={id:editingId||('p-'+Date.now()),cat:$('#f-cat').value,sub:$('#f-sub').value,name,price:+$('#f-price').value||0,unit:$('#f-unit').value.trim()||'월',rating:+$('#f-rating').value||5.0,reviews:+$('#f-reviews').value||0,badge:$('#f-badge').value,desc:$('#f-desc').value.trim()};
+  if(opts.length){
+    d.options=opts.map((o,i)=>({id:'opt'+(i+1),...o}));
+    // 대표가/단위를 최저가 옵션으로 맞춤
+    const min=opts.reduce((a,b)=>b.price<a.price?b:a,opts[0]);
+    d.price=min.price; d.unit=min.unit||d.unit;
+  }
+  if(editingId){PRODUCTS[PRODUCTS.findIndex(p=>p.id===editingId)]=d;}else{PRODUCTS.push(d);}
+  closeModal(); renderSide(); selectCategory(d.cat,d.sub);
+});
+$('#exportBtn').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify({store:'MAAKEON',version:'2026.05',products:PRODUCTS},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='products.json'; a.click();
+});
+$('#resetBtn').addEventListener('click',()=>{ if(confirm('편집 내용을 모두 버리고 초기 상태로?'))location.reload(); });
+
+/* ===== 이벤트 위임 ===== */
+document.addEventListener('click',e=>{
+  const ed=e.target.closest('[data-edit]'); if(ed){e.stopPropagation();openModal(PRODUCTS.find(p=>p.id===ed.dataset.edit));return;}
+  const dl=e.target.closest('[data-del]'); if(dl){e.stopPropagation();if(confirm('이 상품을 삭제할까요?')){PRODUCTS=PRODUCTS.filter(p=>p.id!==dl.dataset.del);renderSide();selectCategory(current.cat,current.sub);}return;}
+  if(e.target.closest('#addSlot')){openModal(null);return;}
+  const lk=e.target.closest('[data-like]'); if(lk){e.stopPropagation();toggleWish(lk.dataset.like);return;}
+  const open=e.target.closest('[data-open]'); if(open){openDetail(open.dataset.open);return;}
+  const home=e.target.closest('[data-home]'); if(home){selectCategory(CATS[0].id);return;}
+  const link=e.target.closest('[data-cat]'); if(link){selectCategory(link.dataset.cat,link.dataset.sub);return;}
+  if(e.target.closest('#homeBtn')){selectCategory(CATS[0].id);return;}
+  if(e.target.closest('#topBtn')){window.scrollTo({top:0,behavior:'smooth'});}
+  // 상세 탭 토글
+  const tab=e.target.closest('.dtabs a'); if(tab){document.querySelectorAll('.dtabs a').forEach(a=>a.classList.remove('on'));tab.classList.add('on');}
+  // 갤러리 썸네일 전환
+  const th=e.target.closest('[data-thumb]');
+  if(th){
+    document.querySelectorAll('#dThumbs .t').forEach(t=>t.classList.remove('on'));
+    th.classList.add('on');
+    const subs=JSON.parse($('#dThumbs').dataset.subs||'[]');
+    $('#dGallerySub').textContent = subs[+th.dataset.thumb]||'';
+  }
+});
+$('#searchInput').addEventListener('keyup',e=>{
+  if(e.key!=='Enter')return; const q=e.target.value.trim().toLowerCase(); if(!q)return;
+  showList();
+  const hits=PRODUCTS.filter(p=>p.name.toLowerCase().includes(q)||(p.desc||'').toLowerCase().includes(q));
+  $('#areaTitle').textContent=`'${e.target.value}' 검색결과 (${hits.length})`;
+  $('#crumb').innerHTML=`<a data-home="1">홈</a><span>›</span>검색`;
+  let html=hits.map(productCard).join('')||`<div class="empty"><div class="ic">🔍</div><div class="t">검색 결과가 없습니다</div></div>`;
+  html+=`<div class="add-slot" id="addSlot"><div class="plus">+</div><div class="lbl">상품 등록</div></div>`;
+  $('#grid').innerHTML=html;
+});
+
+(async function init(){
+  const cj=await loadJSON('categories.json','catData');
+  const pj=await loadJSON('products.json','prodData');
+  CATS=cj.categories; PRODUCTS=pj.products;
+  renderNav(); renderSide(); renderFoot(); selectCategory(CATS[0].id);
+  renderHero(); startHeroAuto();
+  updateWishCount(); applyAuthUI();
+})();
+</script>
+</body>
+</html>

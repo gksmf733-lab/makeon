@@ -1,0 +1,216 @@
+{
+  "store": "MAAKEON",
+  "version": "2026.06",
+  "products": [
+    {
+      "id": "p-place-basic",
+      "cat": "place",
+      "sub": "place-naver",
+      "name": "네이버 플레이스 상위노출 │ 지역 키워드 실유저 최적화",
+      "price": 350000,
+      "unit": "월",
+      "rating": 5.0,
+      "reviews": 128,
+      "badge": "BEST",
+      "desc": "지역 키워드 진단부터 실유저 기반 노출까지, 매장이 검색 상단에 잡히도록 집중 관리합니다.",
+      "options": [
+        { "id": "diag", "name": "진단 + 키워드 분석 (단건)", "price": 150000, "unit": "1회" },
+        { "id": "basic", "name": "베이직 (1개월 관리)", "price": 350000, "unit": "월" },
+        { "id": "premium", "name": "프리미엄 (3개월 집중 + 주간 리포트)", "price": 600000, "unit": "3개월" },
+        { "id": "integrated", "name": "플레이스 + AEO 통합 (3개월)", "price": 900000, "unit": "3개월" }
+      ]
+    },
+    {
+      "id": "p-place-food",
+      "cat": "place",
+      "sub": "place-food",
+      "name": "맛집 마케팅 패키지 │ 플레이스 + 리뷰 + 저장하기 통합",
+      "price": 450000,
+      "unit": "월",
+      "rating": 4.9,
+      "reviews": 73,
+      "badge": "",
+      "desc": "음식점 특화 패키지. 노출·리뷰·저장하기를 한 번에 관리해 방문 전환을 끌어올립니다.",
+      "options": [
+        { "id": "lite", "name": "라이트 (노출 + 저장하기)", "price": 300000, "unit": "월" },
+        { "id": "full", "name": "풀패키지 (노출 + 리뷰 + 저장하기)", "price": 450000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-place-beauty",
+      "cat": "place",
+      "sub": "place-beauty",
+      "name": "병원·성형·화장품 플레이스 마케팅 │ 업종 규제 대응 콘텐츠",
+      "price": 550000,
+      "unit": "월",
+      "rating": 5.0,
+      "reviews": 41,
+      "badge": "",
+      "desc": "의료광고 가이드라인을 고려한 콘텐츠 설계와 플레이스 노출을 함께 진행합니다.",
+      "options": [
+        { "id": "consult", "name": "의료광고 콘텐츠 컨설팅 (단건)", "price": 250000, "unit": "1회" },
+        { "id": "manage", "name": "월 관리 (콘텐츠 + 노출)", "price": 550000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-seo-aeo",
+      "cat": "seo",
+      "sub": "seo-traffic",
+      "name": "AEO·네이버 AI 브리핑 최적화 │ AI가 인용하는 매장 만들기",
+      "price": 300000,
+      "unit": "월",
+      "rating": 5.0,
+      "reviews": 96,
+      "badge": "NEW",
+      "desc": "AI 검색 시대의 핵심. 구조화된 정보 설계로 네이버 AI 브리핑·AI 검색에 매장이 노출되도록 만듭니다.",
+      "options": [
+        { "id": "audit", "name": "AEO 진단 리포트 (단건)", "price": 200000, "unit": "1회" },
+        { "id": "setup", "name": "구조화 데이터 세팅 (단건)", "price": 450000, "unit": "1회" },
+        { "id": "manage", "name": "월 관리 (세팅 + 모니터링)", "price": 300000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-seo-web",
+      "cat": "seo",
+      "sub": "seo-backlink",
+      "name": "웹사이트 SEO 최적화 │ 구조 진단 + 콘텐츠 + 백링크",
+      "price": 400000,
+      "unit": "월",
+      "rating": 4.8,
+      "reviews": 52,
+      "badge": "",
+      "desc": "검색엔진이 좋아하는 사이트 구조로 진단·개선하고, 키워드 콘텐츠와 백링크로 트래픽을 키웁니다.",
+      "options": [
+        { "id": "audit", "name": "SEO 진단 리포트 (단건)", "price": 200000, "unit": "1회" },
+        { "id": "manage", "name": "월 관리 (콘텐츠 + 백링크)", "price": 400000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-cafe-blog",
+      "cat": "cafe",
+      "sub": "cafe-blog",
+      "name": "블로그 상위노출 마케팅 │ 지역 키워드 체험단·콘텐츠 운영",
+      "price": 200000,
+      "unit": "월",
+      "rating": 4.9,
+      "reviews": 178,
+      "badge": "BEST",
+      "desc": "진성 체험단과 키워드 콘텐츠로 블로그 검색 상단을 공략. 자연스러운 후기 흐름을 설계합니다.",
+      "options": [
+        { "id": "single", "name": "포스팅 1건 (체험단)", "price": 80000, "unit": "건" },
+        { "id": "pack5", "name": "월 5건 패키지", "price": 200000, "unit": "월" },
+        { "id": "pack10", "name": "월 10건 패키지", "price": 360000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-cafe-daangn",
+      "cat": "place",
+      "sub": "place-daangn",
+      "name": "당근마켓 비즈프로필 운영대행 │ 동네 단골 만들기",
+      "price": 180000,
+      "unit": "월",
+      "rating": 4.8,
+      "reviews": 39,
+      "badge": "",
+      "desc": "당근 비즈프로필 게시글 기획·발행을 대행해 동네 노출과 단골 확보를 돕습니다.",
+      "options": [
+        { "id": "lite", "name": "라이트 (월 4건)", "price": 120000, "unit": "월" },
+        { "id": "standard", "name": "스탠다드 (월 8건)", "price": 180000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-cpc-place",
+      "cat": "cpc",
+      "sub": "cpc-place",
+      "name": "플레이스 광고 운영대행 │ 광고비 최적화 + 키워드 입찰 관리",
+      "price": 300000,
+      "unit": "월",
+      "rating": 5.0,
+      "reviews": 87,
+      "badge": "",
+      "desc": "플레이스 광고 입찰·키워드·예산을 데이터 기반으로 관리해 클릭당 비용을 낮춥니다.",
+      "options": [
+        { "id": "manage", "name": "운영대행 (월, 광고비 별도)", "price": 300000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-cpc-powerlink",
+      "cat": "cpc",
+      "sub": "cpc-powerlink",
+      "name": "파워링크 운영대행 │ 검색광고 전환 최적화",
+      "price": 350000,
+      "unit": "월",
+      "rating": 4.9,
+      "reviews": 61,
+      "badge": "",
+      "desc": "파워링크 소재·키워드·랜딩 흐름을 함께 최적화해 광고 전환율을 끌어올립니다.",
+      "options": [
+        { "id": "manage", "name": "운영대행 (월, 광고비 별도)", "price": 350000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-sns-insta",
+      "cat": "sns",
+      "sub": "sns-insta",
+      "name": "인스타그램 콘텐츠 + 릴스 운영 │ 자영업자 SNS 셀프마케팅",
+      "price": 250000,
+      "unit": "월",
+      "rating": 4.8,
+      "reviews": 112,
+      "badge": "",
+      "desc": "매장 브랜딩에 맞는 피드·릴스 콘텐츠를 기획·제작하고, 노출되는 운영 전략을 함께 잡습니다.",
+      "options": [
+        { "id": "feed", "name": "피드 콘텐츠 (월 8건)", "price": 250000, "unit": "월" },
+        { "id": "reels", "name": "피드 + 릴스 (월 8건 + 릴스 4건)", "price": 400000, "unit": "월" }
+      ]
+    },
+    {
+      "id": "p-sns-tiktok",
+      "cat": "sns",
+      "sub": "sns-insta",
+      "name": "틱톡 라이브 커머스 세팅 │ 장비 + 송출 + 운영 컨설팅",
+      "price": 500000,
+      "unit": "1회",
+      "rating": 5.0,
+      "reviews": 18,
+      "badge": "NEW",
+      "desc": "라이브 판매를 위한 카메라·조명·송출 세팅부터 진행 동선까지 처음부터 끝까지 설계합니다.",
+      "options": [
+        { "id": "consult", "name": "세팅 컨설팅 (장비 가이드)", "price": 300000, "unit": "1회" },
+        { "id": "full", "name": "풀세팅 + 현장 지원 (1회)", "price": 500000, "unit": "1회" }
+      ]
+    },
+    {
+      "id": "p-store-review",
+      "cat": "store",
+      "sub": "store-review",
+      "name": "SNS 체험단 모집·관리 │ 진성 리뷰 캠페인 운영",
+      "price": 220000,
+      "unit": "캠페인",
+      "rating": 4.9,
+      "reviews": 95,
+      "badge": "",
+      "desc": "업종에 맞는 체험단을 모집·관리하고, 노출 효과가 좋은 리뷰 콘텐츠 가이드를 제공합니다.",
+      "options": [
+        { "id": "c10", "name": "체험단 10명 캠페인", "price": 220000, "unit": "캠페인" },
+        { "id": "c20", "name": "체험단 20명 캠페인", "price": 400000, "unit": "캠페인" }
+      ]
+    },
+    {
+      "id": "p-store-live",
+      "cat": "store",
+      "sub": "store-live",
+      "name": "쇼핑라이브 기획·운영 │ 라이브커머스 매출 설계",
+      "price": 450000,
+      "unit": "1회",
+      "rating": 4.8,
+      "reviews": 27,
+      "badge": "",
+      "desc": "라이브 방송 기획·큐시트·송출 운영까지. 시청에서 구매로 이어지는 흐름을 설계합니다.",
+      "options": [
+        { "id": "plan", "name": "기획·큐시트만 (1회)", "price": 250000, "unit": "1회" },
+        { "id": "full", "name": "기획 + 현장 운영 (1회)", "price": 450000, "unit": "1회" }
+      ]
+    }
+  ]
+}
