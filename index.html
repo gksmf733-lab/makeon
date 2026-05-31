@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>마케온 MAAKEON | 온라인 마케팅 쇼핑몰</title>
+<title>마케온 MAKEON | 온라인 마케팅 쇼핑몰</title>
 <style>
   :root{
     --navy:#10182e; --navy-2:#0a0f20; --navy-card:#161f3a;
@@ -363,7 +363,7 @@
 
 <header>
   <div class="wrap head-main">
-    <div class="logo" id="homeBtn"><span class="mark">●</span>MAAKEON<small>마케온</small></div>
+    <div class="logo" id="homeBtn"><span class="mark">●</span>MAKEON<small>마케온</small></div>
     <div class="search"><input type="text" id="searchInput" placeholder="찾으시는 마케팅 서비스를 검색하세요"><button>🔍</button></div>
     <div class="head-icons"><a id="wishLink">♥ 찜 <span id="wishCount"></span></a><a id="mypageLink" class="hidden">마이페이지</a><a id="cartLink">🛒 장바구니 <span id="cartCount"></span></a></div>
   </div>
@@ -454,7 +454,7 @@
   <div class="wrap">
     <section class="block">
       <div class="feat-banner">
-        <div class="eyebrow">MAAKEON · SERVICE</div>
+        <div class="eyebrow">MAKEON · SERVICE</div>
         <h2 id="dFeatTitle"></h2>
         <p id="dFeatDesc"></p>
       </div>
@@ -509,10 +509,10 @@
     <div class="foot-col"><h4>고객지원</h4><a>공지사항</a><a>자주 묻는 질문</a><a>1:1 문의</a><a>이용약관</a><a>개인정보처리방침</a></div>
   </div>
   <div class="foot-biz">
-    <div class="logo"><span style="color:var(--gold)">●</span> MAAKEON</div>
+    <div class="logo"><span style="color:var(--gold)">●</span> MAKEON</div>
     <span><b>회사명</b> 마케온</span><span><b>대표</b> 나꾸</span><span><b>소재지</b> 경기도 김포시</span><br>
-    <span><b>사업자등록번호</b> 000-00-00000</span><span><b>통신판매업신고</b> 제0000호</span><span><b>이메일</b> hello@maakeon.kr</span>
-    <div style="margin-top:16px;color:#4e576f">© 2026 MAAKEON. All rights reserved.</div>
+    <span><b>사업자등록번호</b> 000-00-00000</span><span><b>통신판매업신고</b> 제0000호</span><span><b>이메일</b> hello@makeon.kr</span>
+    <div style="margin-top:16px;color:#4e576f">© 2026 MAKEON. All rights reserved.</div>
   </div>
 </div></footer>
 
@@ -712,7 +712,7 @@ let CATS, PRODUCTS, current = {cat:null, sub:null}, editingId = null, currentPro
    배너 추가/수정은 아래 배열만 바꾸면 됩니다.
    img: 가로 이미지 URL (비우면 그라데이션 배경). action: 'inquiry' | {cat:'place'} 등 */
 const BANNERS = [
-  { eyebrow:'MAAKEON · ONLINE MARKETING', title:'소상공인을 위한 올인원 마케팅 스토어', desc:'플레이스부터 AEO·콘텐츠·검색광고까지, 필요한 서비스만 골라 시작하세요.', cta:'서비스 상담 신청', img:'', action:'inquiry' },
+  { eyebrow:'MAKEON · ONLINE MARKETING', title:'소상공인을 위한 올인원 마케팅 스토어', desc:'플레이스부터 AEO·콘텐츠·검색광고까지, 필요한 서비스만 골라 시작하세요.', cta:'서비스 상담 신청', img:'', action:'inquiry' },
   { eyebrow:'NAVER PLACE', title:'검색하는 손님이 가장 먼저 보는 자리에', desc:'네이버 플레이스 상위노출, 실유저 기반으로 안전하게.', cta:'플레이스 상품 보기', img:'', action:{cat:'place'} },
   { eyebrow:'AEO · AI BRIEFING', title:'AI가 우리 매장을 인용하게 만드세요', desc:'네이버 AI 브리핑 시대, 지금 선점하는 곳이 앞서갑니다.', cta:'AEO 상품 보기', img:'', action:{cat:'seo'} },
 ];
@@ -1255,7 +1255,7 @@ $('#modalSave').addEventListener('click',()=>{
   closeModal(); renderSide(); selectCategory(d.cat,d.sub);
 });
 $('#exportBtn').addEventListener('click',()=>{
-  const blob=new Blob([JSON.stringify({store:'MAAKEON',version:'2026.05',products:PRODUCTS},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({store:'MAKEON',version:'2026.05',products:PRODUCTS},null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='products.json'; a.click();
 });
 $('#resetBtn').addEventListener('click',()=>{ if(confirm('편집 내용을 모두 버리고 초기 상태로?'))location.reload(); });
