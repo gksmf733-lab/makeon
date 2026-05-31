@@ -31,6 +31,10 @@
   .logo{font-size:24px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px;cursor:pointer}
   .logo .mark{color:var(--gold)}
   .logo small{font-size:11px;color:var(--text-dim);font-weight:500;letter-spacing:3px;margin-top:6px}
+  .logo-img{display:inline-flex;align-items:center;background:#fff;border-radius:12px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .logo-img img{height:30px;width:auto;display:block}
+  .foot-biz .logo-img{padding:7px 12px;border-radius:10px}
+  .foot-biz .logo-img img{height:24px}
   .search{flex:1;max-width:460px;margin-left:auto;display:flex;background:var(--navy-card);border:1px solid var(--line);border-radius:999px;overflow:hidden}
   .search input{flex:1;background:transparent;border:0;color:var(--text);padding:11px 18px;font-size:14px;outline:none}
   .search input::placeholder{color:var(--text-dim)}
@@ -363,7 +367,7 @@
 
 <header>
   <div class="wrap head-main">
-    <div class="logo" id="homeBtn"><span class="mark">●</span>MAKEON<small>마케온</small></div>
+    <div class="logo" id="homeBtn"><span class="logo-img"><img src="assets/makeon-logo.png" alt="MAKEON 마케온"></span></div>
     <div class="search"><input type="text" id="searchInput" placeholder="찾으시는 마케팅 서비스를 검색하세요"><button>🔍</button></div>
     <div class="head-icons"><a id="wishLink">♥ 찜 <span id="wishCount"></span></a><a id="mypageLink" class="hidden">마이페이지</a><a id="cartLink">🛒 장바구니 <span id="cartCount"></span></a></div>
   </div>
@@ -509,7 +513,7 @@
     <div class="foot-col"><h4>고객지원</h4><a>공지사항</a><a>자주 묻는 질문</a><a>1:1 문의</a><a>이용약관</a><a>개인정보처리방침</a></div>
   </div>
   <div class="foot-biz">
-    <div class="logo"><span style="color:var(--gold)">●</span> MAKEON</div>
+    <div class="logo"><span class="logo-img"><img src="assets/makeon-logo.png" alt="MAKEON 마케온"></span></div>
     <span><b>회사명</b> 마케온</span><span><b>대표</b> 나꾸</span><span><b>소재지</b> 경기도 김포시</span><br>
     <span><b>사업자등록번호</b> 000-00-00000</span><span><b>통신판매업신고</b> 제0000호</span><span><b>이메일</b> hello@makeon.kr</span>
     <div style="margin-top:16px;color:#4e576f">© 2026 MAKEON. All rights reserved.</div>
